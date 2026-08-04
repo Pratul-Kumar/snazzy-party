@@ -9,7 +9,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="min-h-screen md:min-h-[80vh] pt-24 md:pt-0 flex flex-col items-center justify-center text-center gap-8 relative">
+    <section className="min-h-[70vh] md:min-h-[80vh] pt-16 md:pt-0 flex flex-col items-center justify-center text-center gap-8 relative">
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}

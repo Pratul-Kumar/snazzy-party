@@ -2,7 +2,7 @@
 
 export default function Footer() {
   return (
-    <footer className="mt-20 py-12 border-t border-white/10 text-center px-4 relative z-10 bg-black/50 backdrop-blur-md">
+    <footer className="mt-auto py-12 border-t border-white/10 text-center px-4 relative z-10 bg-black/50 backdrop-blur-md">
       <div className="max-w-4xl mx-auto flex flex-col items-center gap-6">
         <h2 className="text-2xl font-black uppercase tracking-widest text-white glow-text">
           Party Recovery Department

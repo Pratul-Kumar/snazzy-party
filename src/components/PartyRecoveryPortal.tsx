@@ -20,7 +20,7 @@ import ExcuseAnalyzer from "./ExcuseAnalyzer";
 
 export default function PartyRecoveryPortal() {
   return (
-    <div className="relative w-full overflow-hidden">
+    <div className="relative flex-1 flex flex-col w-full">
       {/* Background Effects */}
       <div className="fixed inset-0 z-[-1] bg-background">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-accent/10 blur-[120px]" />
@@ -30,7 +30,7 @@ export default function PartyRecoveryPortal() {
       <EmergencyAlert />
       <Navbar />
 
-      <div className="pt-32 pb-16 px-4 md:px-8 max-w-7xl mx-auto space-y-24">
+      <div className="pt-32 pb-16 px-4 md:px-8 max-w-7xl w-full mx-auto flex flex-col gap-16 md:gap-24">
         <HeroSection />
         <StatsSection />
         <ProgressAndDebt />
