@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 
 const queueList = [
@@ -22,3 +23,4 @@ export const RecoveryQueue = () => {
     </div>
   );
 };
+export default RecoveryQueue;

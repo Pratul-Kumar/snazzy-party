@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
 import { usePortal } from '../app/context/PortalContext';
@@ -74,3 +76,4 @@ export const RecoveryForm = () => {
     </form>
   );
 };
+export default RecoveryForm;
