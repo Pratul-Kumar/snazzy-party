@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
-import { ReactTyped } from "react-typed";
 
 const EXCUSES = [
   "I'm busy editing.",
@@ -49,7 +48,7 @@ export default function ExcuseGenerator() {
                 exit={{ opacity: 0, scale: 0.8, y: -20 }}
                 className="text-2xl md:text-4xl font-black text-white italic glow-text"
               >
-                <ReactTyped strings={[currentExcuse]} typeSpeed={40} showCursor={false} />
+                {currentExcuse}
               </motion.div>
             ) : (
               <div className="text-xl md:text-2xl font-medium text-gray-600 italic">
