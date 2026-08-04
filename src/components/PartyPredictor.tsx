@@ -51,7 +51,7 @@ export const PartyPredictor = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-gray-900 bg-opacity-80 rounded-xl border border-red-600 shadow-lg">
+    <div className="max-w-xl mx-auto p-4 md:p-6 bg-gray-900 bg-opacity-80 rounded-xl border border-red-600 shadow-lg">
       <h2 className="text-2xl font-bold text-center text-white mb-4 glow-text">Party Date Prediction Engine</h2>
       <p className="text-center text-gray-300 mb-6">Powered by the Ministry of Party Intelligence</p>
       <div className="flex justify-center mb-4">

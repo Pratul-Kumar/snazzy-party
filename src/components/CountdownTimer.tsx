@@ -35,20 +35,20 @@ export default function CountdownTimer() {
         </h2>
         
         {!isFinished ? (
-          <div className="flex justify-center items-center gap-4 md:gap-8 mb-4">
+          <div className="flex justify-center items-center gap-2 sm:gap-4 md:gap-8 mb-4">
             <div className="flex flex-col items-center">
-              <span className="text-4xl md:text-7xl font-black text-white font-mono">{hours.toString().padStart(2, '0')}</span>
-              <span className="text-sm text-gray-500 uppercase tracking-widest mt-2">Hours</span>
+              <span className="text-3xl sm:text-4xl md:text-7xl font-black text-white font-mono">{hours.toString().padStart(2, '0')}</span>
+              <span className="text-xs sm:text-sm text-gray-500 uppercase tracking-widest mt-2">Hours</span>
             </div>
-            <span className="text-4xl md:text-7xl font-black text-accent animate-pulse">:</span>
+            <span className="text-3xl sm:text-4xl md:text-7xl font-black text-accent animate-pulse">:</span>
             <div className="flex flex-col items-center">
-              <span className="text-4xl md:text-7xl font-black text-white font-mono">{minutes.toString().padStart(2, '0')}</span>
-              <span className="text-sm text-gray-500 uppercase tracking-widest mt-2">Minutes</span>
+              <span className="text-3xl sm:text-4xl md:text-7xl font-black text-white font-mono">{minutes.toString().padStart(2, '0')}</span>
+              <span className="text-xs sm:text-sm text-gray-500 uppercase tracking-widest mt-2">Minutes</span>
             </div>
-            <span className="text-4xl md:text-7xl font-black text-accent animate-pulse">:</span>
+            <span className="text-3xl sm:text-4xl md:text-7xl font-black text-accent animate-pulse">:</span>
             <div className="flex flex-col items-center">
-              <span className="text-4xl md:text-7xl font-black text-accent font-mono">{seconds.toString().padStart(2, '0')}</span>
-              <span className="text-sm text-gray-500 uppercase tracking-widest mt-2">Seconds</span>
+              <span className="text-3xl sm:text-4xl md:text-7xl font-black text-accent font-mono">{seconds.toString().padStart(2, '0')}</span>
+              <span className="text-xs sm:text-sm text-gray-500 uppercase tracking-widest mt-2">Seconds</span>
             </div>
           </div>
         ) : (

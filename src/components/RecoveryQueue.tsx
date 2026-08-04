@@ -11,7 +11,7 @@ const queueList = [
 
 export const RecoveryQueue = () => {
   return (
-    <div className="p-6 bg-gray-800 rounded border border-accent">
+    <div className="p-4 md:p-6 bg-gray-800 rounded border border-accent">
       <h3 className="text-xl font-bold text-white mb-2 glow-text">National Recovery Queue</h3>
       <ul className="list-decimal list-inside text-gray-200 space-y-1">
         {queueList.map((name, idx) => (

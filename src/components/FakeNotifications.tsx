@@ -39,14 +39,14 @@ export default function FakeNotifications() {
   }, []);
 
   return (
-    <div className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50 pointer-events-none">
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-8 md:bottom-8 z-50 pointer-events-none flex justify-center md:justify-end">
       <AnimatePresence>
         {notification && (
           <motion.div
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            className="glass-card bg-black/80 border border-white/10 shadow-2xl p-4 rounded-xl flex items-start gap-3 max-w-sm pointer-events-auto"
+            className="glass-card bg-black/80 border border-white/10 shadow-2xl p-4 rounded-xl flex items-start gap-3 w-full md:w-auto max-w-sm pointer-events-auto"
           >
             <div className="bg-accent/20 p-2 rounded-lg mt-1 text-accent animate-pulse">
               <Bell size={18} />

@@ -25,12 +25,12 @@ export default function ExcuseAnalyzer() {
   };
 
   return (
-    <section className="max-w-2xl mx-auto p-6 bg-gray-900 bg-opacity-80 rounded-xl shadow-xl backdrop-blur-sm text-white">
+    <section className="max-w-2xl mx-auto p-4 md:p-6 bg-gray-900 bg-opacity-80 rounded-xl shadow-xl backdrop-blur-sm text-white">
       <h2 className="text-2xl font-bold mb-4 text-center glow-text">Excuse Analyzer</h2>
       <p className="mb-4 text-center text-gray-300">
         Type a reason why a celebration went sideways and get a witty, official‑style excuse.
       </p>
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-col sm:flex-row gap-2 mb-4">
         <input
           type="text"
           placeholder="e.g., missing cake"

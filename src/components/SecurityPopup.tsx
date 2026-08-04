@@ -6,8 +6,8 @@ import { gsap } from 'gsap';
 import { useEffect } from 'react';
 
 const backdropStyle = "fixed inset-0 z-[100] bg-black bg-opacity-80 backdrop-blur-md";
-const modalStyle = "fixed inset-0 z-[110] flex items-center justify-center p-4";
-const cardStyle = "bg-gray-900 bg-opacity-95 rounded-xl border-4 border-red-600 shadow-[0_0_50px_rgba(220,38,38,0.5)] max-w-3xl w-full p-6 text-white";
+const modalStyle = "fixed inset-0 z-[110] flex items-center justify-center p-4 overflow-y-auto";
+const cardStyle = "bg-gray-900 bg-opacity-95 rounded-xl border-4 border-red-600 shadow-[0_0_50px_rgba(220,38,38,0.5)] max-w-3xl w-full max-h-[90vh] overflow-y-auto p-4 md:p-6 text-white my-auto";
 
 export const SecurityPopup = () => {
   const { hasEntered, enterPortal } = usePortal();

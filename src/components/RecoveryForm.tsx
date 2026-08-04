@@ -19,7 +19,7 @@ export const RecoveryForm = () => {
 
   if (submitted) {
     return (
-      <div className="p-6 bg-gray-800 rounded border border-green-500 text-white max-w-xl mx-auto">
+      <div className="p-4 md:p-6 bg-gray-800 rounded border border-green-500 text-white max-w-xl mx-auto">
         <h3 className="text-xl font-bold mb-2">Application Submitted Successfully</h3>
         <p>Application ID: {appId}</p>
         <p>Status: UNDER INVESTIGATION</p>
@@ -29,7 +29,7 @@ export const RecoveryForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-xl mx-auto p-6 bg-gray-900 rounded border border-accent">
+    <form onSubmit={handleSubmit} className="max-w-xl mx-auto p-4 md:p-6 bg-gray-900 rounded border border-accent">
       <h2 className="text-2xl font-bold text-center text-white mb-4 glow-text">Party Recovery Application</h2>
       <div className="mb-4">
         <label className="block text-gray-300 mb-1">Applicant Name</label>
@@ -58,7 +58,7 @@ export const RecoveryForm = () => {
         <label className="block text-gray-300 mb-1">Expected Compensation</label>
         <div className="flex flex-wrap gap-2">
           {['Pizza','Biryani','Cake','Cold Drink','Gulab Jamun','Other'].map(item => (
-            <label key={item} className="inline-flex items-center">
+            <label key={item} className="inline-flex items-center py-2 pr-3">
               <input type="checkbox" className="mr-1" /> {item}
             </label>
           ))}
