@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   description: "Official government recovery portal for SnazzyZone pending parties.",
 };
 
+import { PortalProvider } from "./context/PortalContext";
+import { SecurityPopup } from "../components/SecurityPopup";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -17,8 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.className} antialiased bg-background text-text`}>
-        {children}
+        <PortalProvider>
+          <SecurityPopup />
+          {children}
+        </PortalProvider>
       </body>
     </html>
   );
 }
+
