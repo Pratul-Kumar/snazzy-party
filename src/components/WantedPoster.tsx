@@ -5,7 +5,7 @@ export default function WantedPoster() {
   return (
     <motion.div
       whileHover={{ scale: 1.02, rotateZ: 1 }}
-      className="relative p-1 glass-card rounded-3xl overflow-hidden min-h-[500px] md:h-[600px] h-auto flex flex-col justify-center"
+      className="relative p-1 glass-card rounded-3xl overflow-hidden h-auto flex flex-col justify-center"
     >
       {/* Animated glowing border */}
       <div className="absolute inset-0 bg-gradient-to-r from-accent via-warning to-accent opacity-50 animate-[spin-slow_8s_linear_infinite]" />

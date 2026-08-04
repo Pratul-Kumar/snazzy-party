@@ -30,7 +30,7 @@ export default function PartyRecoveryPortal() {
       <EmergencyAlert />
       <Navbar />
 
-      <div className="pt-32 pb-16 px-4 md:px-8 max-w-7xl w-full mx-auto flex flex-col gap-16 md:gap-24">
+      <div className="pt-32 px-4 md:px-8 max-w-7xl w-full mx-auto flex flex-col gap-16 md:gap-24">
         <HeroSection />
         <StatsSection />
         <ProgressAndDebt />

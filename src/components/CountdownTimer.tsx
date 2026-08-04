@@ -25,7 +25,7 @@ export default function CountdownTimer() {
   const seconds = timeLeft % 60;
 
   return (
-    <section className="py-12 flex justify-center">
+    <section className="flex justify-center">
       <motion.div 
         whileHover={{ scale: 1.02 }}
         className="glass-card p-8 md:p-12 rounded-3xl text-center border-t border-accent max-w-3xl w-full"

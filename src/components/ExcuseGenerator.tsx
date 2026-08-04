@@ -27,7 +27,7 @@ export default function ExcuseGenerator() {
   };
 
   return (
-    <section id="excuses" className="py-12">
+    <section id="excuses">
       <div className="glass-card p-8 md:p-16 rounded-3xl text-center max-w-4xl mx-auto relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"></div>

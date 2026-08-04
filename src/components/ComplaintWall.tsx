@@ -15,7 +15,7 @@ const COMPLAINTS = [
 
 export default function ComplaintWall() {
   return (
-    <section id="complaint" className="glass-card p-6 md:p-8 rounded-3xl h-[400px] md:h-[600px] flex flex-col">
+    <section id="complaint" className="glass-card p-6 md:p-8 rounded-3xl h-auto flex flex-col">
       <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
         <span className="w-2 h-8 bg-warning rounded-full"></span> Official Complaints
       </h2>
