@@ -1,106 +1,94 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
+import confetti from "canvas-confetti";
+import { Scale } from "lucide-react";
 
 export default function Verdict() {
-  const [timeLeft, setTimeLeft] = useState(72 * 60 * 60);
+  const [inView, setInView] = useState(false);
+  const verdictRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => (prev <= 0 ? 0 : prev - 1));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !inView) {
+          setInView(true);
+          setTimeout(() => {
+            confetti({
+              particleCount: 150,
+              spread: 100,
+              origin: { y: 0.6 },
+              colors: ["#ff3b30", "#ffcc00", "#ffffff"],
+              disableForReducedMotion: true
+            });
+          }, 800);
+        }
+      },
+      { threshold: 0.5 }
+    );
 
-  const hours = Math.floor(timeLeft / 3600);
-  const minutes = Math.floor((timeLeft % 3600) / 60);
-  const seconds = timeLeft % 60;
-
-  const pad = (n: number) => n.toString().padStart(2, "0");
+    if (verdictRef.current) {
+      observer.observe(verdictRef.current);
+    }
+    return () => observer.disconnect();
+  }, [inView]);
 
   return (
-    <section className="section-snap">
+    <section ref={verdictRef} className="section-premium !py-24 text-center">
       <motion.div
-        initial={{ opacity: 0, y: 60 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="max-w-lg w-full text-center"
+        initial={{ opacity: 0, scale: 0.9 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+        className="w-full max-w-2xl mx-auto"
       >
-        {/* Section label */}
-        <div className="flex items-center gap-3 mb-10">
-          <div className="h-px flex-1 bg-[var(--border)]" />
-          <span className="text-[11px] font-medium text-[var(--text-muted)] uppercase tracking-[0.2em]">
-            Final Verdict
-          </span>
-          <div className="h-px flex-1 bg-[var(--border)]" />
+        <div className="flex justify-center mb-8">
+          <Scale size={48} className="text-white/20" />
         </div>
 
-        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
-          The Court Has <span className="text-accent-gradient">Decided</span>
-        </h2>
-        <p className="text-sm text-[var(--text-secondary)] mb-10 max-w-sm mx-auto leading-relaxed">
-          After reviewing all evidence, excuses, and subscriber testimonies, the verdict is clear.
+        <p className="text-sm font-bold text-muted uppercase tracking-[0.2em] mb-8 leading-loose">
+          After reviewing<br/>
+          <span className="text-white">Evidence • Petitions • Excuses • Votes</span>
         </p>
 
-        {/* Verdict card */}
-        <div className="surface p-6 sm:p-8 mb-8 relative overflow-hidden glow-accent">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 via-orange-500 to-red-500" />
+        <p className="text-lg text-text mb-6">
+          The Department concludes SnazzyZone is
+        </p>
 
-          <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--text-muted)] mb-4">Official Ruling</p>
+        <div className="relative inline-block mb-12">
+          <motion.div
+            initial={{ scale: 2, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.5, type: "spring", stiffness: 100 }}
+            className="border-4 sm:border-8 border-accent p-4 sm:p-6 rotate-[-2deg]"
+          >
+            <h2 className="text-5xl sm:text-7xl font-black text-accent uppercase tracking-widest m-0 leading-none shadow-red-500/50 drop-shadow-2xl">
+              OFFICIALLY<br/>GUILTY
+            </h2>
+          </motion.div>
+        </div>
 
-          <h3 className="text-3xl sm:text-4xl font-bold mb-2 text-accent-gradient">
-            GUILTY
-          </h3>
-          <p className="text-base text-[var(--text-secondary)] mb-6">
-            of chronic party avoidance
-          </p>
+        <div className="surface p-6 sm:p-8 max-w-sm mx-auto mb-10 text-left relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1 h-full bg-accent" />
+          <h4 className="text-xs font-bold text-muted uppercase tracking-widest mb-4">Mandated Punishment</h4>
+          <ul className="space-y-3 font-bold text-lg">
+            <li className="flex items-center gap-3">🍕 <span className="text-text">Pizza</span></li>
+            <li className="flex items-center gap-3">🍗 <span className="text-text">Biryani</span></li>
+            <li className="flex items-center gap-3">🥤 <span className="text-text">Cold Drinks</span></li>
+            <li className="flex items-center gap-3">🎂 <span className="text-text">Cake</span></li>
+          </ul>
+        </div>
 
-          <div className="h-px bg-[var(--border)] mb-6" />
-
-          <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--text-muted)] mb-3">Time until enforcement</p>
-
-          {/* Countdown */}
-          <div className="flex justify-center items-center gap-3 sm:gap-5 mb-6">
-            {[
-              { value: pad(hours), label: "hrs" },
-              { value: ":", label: "" },
-              { value: pad(minutes), label: "min" },
-              { value: ":", label: "" },
-              { value: pad(seconds), label: "sec" },
-            ].map((item, i) =>
-              item.label === "" ? (
-                <span key={i} className="text-2xl sm:text-3xl font-bold text-[var(--text-muted)] animate-pulse">
-                  {item.value}
-                </span>
-              ) : (
-                <div key={i} className="flex flex-col items-center">
-                  <span className="text-2xl sm:text-4xl font-bold font-mono tabular-nums">{item.value}</span>
-                  <span className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider mt-1">{item.label}</span>
-                </div>
-              )
-            )}
-          </div>
-
-          <p className="text-xs text-[var(--text-secondary)] italic">
-            "Friends have been authorized to order food on the accused's tab."
+        <div className="space-y-2">
+          <p className="text-xs font-bold text-muted uppercase tracking-widest">Sentence Effective</p>
+          <p className="text-xl font-black text-white uppercase tracking-widest">Immediately</p>
+          <p className="text-xs font-black text-accent uppercase tracking-[0.3em] mt-4 pt-4 border-t border-white/10 max-w-[200px] mx-auto">
+            NO APPEAL
           </p>
         </div>
 
-        {/* Footer */}
-        <div className="space-y-3 pt-4">
-          <p className="text-xs text-[var(--text-secondary)]">
-            Made with 🔥 by <span className="font-semibold text-[var(--text-primary)]">Snazzy Janta Party</span>
-          </p>
-          <p className="text-[10px] text-[var(--text-muted)]">
-            Department of Party Recovery & Celebration Affairs
-          </p>
-          <div className="h-px bg-[var(--border)] max-w-[200px] mx-auto" />
-          <p className="text-[10px] text-[var(--text-muted)]">
-            © 2026 All Rights Reserved · No Subscriber Left Hungry™
-          </p>
-        </div>
       </motion.div>
     </section>
   );

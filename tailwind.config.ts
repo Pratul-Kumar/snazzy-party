@@ -12,12 +12,17 @@ const config: Config = {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
       colors: {
-        background: "#09090b",
-        card: "#111113",
-        accent: "#ef4444",
-        warning: "#f97316",
-        success: "#22c55e",
-        text: "#fafafa",
+        background: "#050505",
+        surface: "#111111",
+        border: "rgba(255, 255, 255, 0.08)",
+        accent: "#ff3b30",
+        gold: "#ffcc00",
+        green: "#22c55e",
+        text: "#ffffff",
+        muted: "#8a8a8a",
+      },
+      borderRadius: {
+        "24": "24px",
       },
       animation: {
         "fade-in": "fadeIn 0.6s ease-out forwards",

@@ -10,7 +10,12 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Party Recovery Department — Official Investigation",
   description: "SnazzyZone has crossed 100K subscribers without a single party. This is the official government investigation portal.",
-  viewport: "width=device-width, initial-scale=1, viewport-fit=cover",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 import { PortalProvider } from "./context/PortalContext";
