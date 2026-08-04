@@ -20,7 +20,7 @@ export default function ProofHeForgot() {
             <div>
               <span className="text-[10px] font-black uppercase text-accent tracking-widest bg-accent/10 px-2 py-1 rounded">Milestone 1</span>
               <h3 className="text-2xl font-black mt-4 mb-2">50K Subs</h3>
-              <p className="text-sm font-medium text-muted">Bro said "100K pe ek sath karenge." Big lie.</p>
+              <p className="text-sm font-medium text-muted">Bro said &quot;100K pe ek sath karenge.&quot; Big lie.</p>
             </div>
             <div className="mt-6 pt-4 border-t border-white/5 flex justify-between items-center">
               <span className="text-xs uppercase font-bold text-muted">Status</span>
@@ -38,7 +38,7 @@ export default function ProofHeForgot() {
             <div>
               <span className="text-[10px] font-black uppercase text-gold tracking-widest bg-gold/10 px-2 py-1 rounded">Milestone 2</span>
               <h3 className="text-2xl font-black mt-4 mb-2">Birthday</h3>
-              <p className="text-sm font-medium text-muted">Didn't even buy a cake. "I don't celebrate birthdays." Yeah right.</p>
+              <p className="text-sm font-medium text-muted">Didn&apos;t even buy a cake. &quot;I don&apos;t celebrate birthdays.&quot; Yeah right.</p>
             </div>
             <div className="mt-6 pt-4 border-t border-white/5 flex justify-between items-center">
               <span className="text-xs uppercase font-bold text-muted">Status</span>

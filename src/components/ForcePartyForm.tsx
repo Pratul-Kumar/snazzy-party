@@ -39,7 +39,7 @@ export default function ForcePartyForm() {
           >
             <div>
               <label className="text-sm font-bold text-white uppercase tracking-wider block mb-3">
-                What's your name?
+                What&apos;s your name?
               </label>
               <input 
                 type="text" 
@@ -92,7 +92,7 @@ export default function ForcePartyForm() {
             className="w-full flex flex-col items-center"
           >
             <h3 className="text-2xl font-black mb-6 text-center text-accent uppercase tracking-widest">
-              You're in! 🎉
+              You&apos;re in! 🎉
             </h3>
             
             <ShareCard name={name} food={food} />

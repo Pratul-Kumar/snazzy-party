@@ -71,7 +71,7 @@ export default function ExcuseHallOfFame() {
         </div>
 
         <div className="surface p-8 text-center border border-dashed border-white/20">
-          <p className="text-xs font-bold uppercase tracking-widest text-muted mb-4">Today's Excuse</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-muted mb-4">Today&apos;s Excuse</p>
           
           <AnimatePresence mode="wait">
             {generating ? (
@@ -80,7 +80,7 @@ export default function ExcuseHallOfFame() {
               </motion.div>
             ) : recentExcuse ? (
               <motion.div key={recentExcuse} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="h-12 flex items-center justify-center">
-                <p className="text-xl font-black text-white">"{recentExcuse}"</p>
+                <p className="text-xl font-black text-white">&quot;{recentExcuse}&quot;</p>
               </motion.div>
             ) : (
               <div className="h-12 flex items-center justify-center">
