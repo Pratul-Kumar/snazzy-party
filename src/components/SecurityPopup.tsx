@@ -1,3 +1,4 @@
+"use client";
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePortal } from '../app/context/PortalContext';
 import confetti from 'canvas-confetti';

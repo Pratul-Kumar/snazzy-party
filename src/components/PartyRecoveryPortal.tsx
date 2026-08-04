@@ -1,5 +1,4 @@
 "use client";
-
 import EmergencyAlert from "./EmergencyAlert";
 import Navbar from "./Navbar";
 import HeroSection from "./HeroSection";
@@ -47,77 +46,6 @@ export default function PartyRecoveryPortal() {
         <RecoveryForm />
         <RecoveryQueue />
         <ExcuseAnalyzer />
-      </div>
-
-      <Footer />
-      <FakeNotifications />
-      <EasterEgg />
-    </div>
-  );
-}
-
-  return (
-    <div className="relative w-full overflow-hidden">
-      {/* Background Effects */}
-      <div className="fixed inset-0 z-[-1] bg-background">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-accent/10 blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-warning/10 blur-[120px]" />
-      </div>
-
-      <EmergencyAlert />
-      <Navbar />
-      
-      <div className="pt-32 pb-16 px-4 md:px-8 max-w-7xl mx-auto space-y-24">
-        <HeroSection />
-        <StatsSection />
-        <ProgressAndDebt />
-        <Timeline />
-        <ExcuseGenerator />
-        
-        <div className="grid md:grid-cols-2 gap-12 items-start">
-          <ComplaintWall />
-          <WantedPoster />
-        </div>
-        
-        <CountdownTimer />
-        {/* New Features */}
-        <PartyPredictor />
-        <RecoveryForm />
-        <RecoveryQueue />
-        <ExcuseAnalyzer />
-      </div>
-
-      <Footer />
-      <FakeNotifications />
-      <EasterEgg />
-    </div>
-  );
-}
-
-  return (
-    <div className="relative w-full overflow-hidden">
-      {/* Background Effects */}
-      <div className="fixed inset-0 z-[-1] bg-background">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-accent/10 blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-warning/10 blur-[120px]" />
-      </div>
-
-      <EmergencyAlert />
-      <Navbar />
-      
-      <div className="pt-32 pb-16 px-4 md:px-8 max-w-7xl mx-auto space-y-24">
-        <HeroSection />
-        <StatsSection />
-        <ProgressAndDebt />
-        <Timeline />
-        <ExcuseGenerator />
-        
-        <div className="grid md:grid-cols-2 gap-12 items-start">
-          <ComplaintWall />
-          <WantedPoster />
-        </div>
-        
-        <CountdownTimer />
       </div>
 
       <Footer />
