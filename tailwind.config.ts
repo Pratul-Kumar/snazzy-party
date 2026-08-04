@@ -8,28 +8,24 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      colors: {
-        background: "#050505",
-        card: "#101010",
-        accent: "#ff3838",
-        warning: "#ffcc00",
-        success: "#00d084",
-        text: "#ffffff",
+      fontFamily: {
+        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      colors: {
+        background: "#09090b",
+        card: "#111113",
+        accent: "#ef4444",
+        warning: "#f97316",
+        success: "#22c55e",
+        text: "#fafafa",
       },
       animation: {
-        "spin-slow": "spin 8s linear infinite",
-        "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "glow": "glow 2s ease-in-out infinite alternate",
+        "fade-in": "fadeIn 0.6s ease-out forwards",
       },
       keyframes: {
-        glow: {
-          "0%": { boxShadow: "0 0 5px #ff3838, 0 0 10px #ff3838" },
-          "100%": { boxShadow: "0 0 20px #ff3838, 0 0 30px #ff3838" },
+        fadeIn: {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
       },
     },
