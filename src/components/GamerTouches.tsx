@@ -17,8 +17,8 @@ export default function GamerTouches() {
           className="surface p-6 sm:p-8"
         >
           <div className="mb-8 border-b border-white/10 pb-6">
-            <p className="text-[10px] font-bold text-accent uppercase tracking-[0.2em] mb-1">Main Quest</p>
-            <h3 className="text-2xl font-black uppercase text-white mb-4">Host 100K Party</h3>
+            <p className="text-[10px] font-bold text-accent uppercase tracking-[0.2em] mb-1">Main Quest 🎮</p>
+            <h3 className="text-2xl font-black uppercase text-white mb-4">Give The Party</h3>
             
             <div className="flex flex-wrap gap-2 mb-6">
               <span className="bg-red-500/10 text-red-500 text-xs font-black px-3 py-1 rounded border border-red-500/20 uppercase">
@@ -44,8 +44,18 @@ export default function GamerTouches() {
             <p className="text-[10px] font-bold text-muted uppercase tracking-[0.2em] mb-3">Achievements</p>
             
             <div className="flex items-center justify-between bg-green/10 p-3 rounded-xl border border-green/20">
-              <span className="font-black text-green">Reach 100K</span>
+              <span className="font-black text-green">50K</span>
               <span className="text-[10px] font-black uppercase tracking-widest bg-green text-black px-2 py-1 rounded">Unlocked</span>
+            </div>
+            
+            <div className="flex items-center justify-between bg-green/10 p-3 rounded-xl border border-green/20">
+              <span className="font-black text-green">Birthday</span>
+              <span className="text-[10px] font-black uppercase tracking-widest bg-green text-black px-2 py-1 rounded">Unlocked</span>
+            </div>
+
+            <div className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/10 opacity-70">
+              <span className="font-black text-white/70">100K</span>
+              <span className="text-[10px] font-black uppercase tracking-widest bg-white/10 text-white/70 px-2 py-1 rounded border border-white/20">Loading...</span>
             </div>
 
             <div className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/10 opacity-50">

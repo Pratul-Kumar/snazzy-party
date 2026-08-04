@@ -5,11 +5,19 @@ import { subscribeToExcuses, trackGeneratedExcuse } from "../lib/firebase";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 
-const ALL_EXCUSES = [
-  "Busy Editing", "Next Sunday", "Silver Play Button First", "Budget Updating", 
-  "Restaurant Server Down", "Mom Said No", "Wallet Loading", "Internet Lag", 
-  "Waiting For 200K", "I Forgot", "I Thought You Forgot", "My Squad Was Offline", 
-  "Tournament Season", "Dog ate my wallet", "Bank holiday", "Stuck in traffic"
+const EXCUSES = [
+  "My wallet has high ping.",
+  "Battle Pass first.",
+  "Patch update coming.",
+  "Next Sunday bro.",
+  "100K ke baad pakka.",
+  "Birthday ke baad.",
+  "My squad isn't online.",
+  "Restaurant server crashed.",
+  "Party DLC not installed.",
+  "Mom said no.",
+  "Budget buffering.",
+  "Silver Play Button first."
 ];
 
 export default function ExcuseHallOfFame() {
@@ -32,7 +40,7 @@ export default function ExcuseHallOfFame() {
   const generateExcuse = async () => {
     setGenerating(true);
     await new Promise(r => setTimeout(r, 600));
-    const random = ALL_EXCUSES[Math.floor(Math.random() * ALL_EXCUSES.length)];
+    const random = EXCUSES[Math.floor(Math.random() * EXCUSES.length)];
     setRecentExcuse(random);
     await trackGeneratedExcuse(random);
     setGenerating(false);
@@ -71,7 +79,7 @@ export default function ExcuseHallOfFame() {
         </div>
 
         <div className="surface p-8 text-center border border-dashed border-white/20">
-          <p className="text-xs font-bold uppercase tracking-widest text-muted mb-4">Today&apos;s Excuse</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-muted mb-4">Today&apos;s Excuse 🤡</p>
           
           <AnimatePresence mode="wait">
             {generating ? (

@@ -25,24 +25,28 @@ export default function MissingPoster() {
             </h2>
           </div>
 
-          <h3 className="text-2xl sm:text-3xl font-black mb-10 uppercase tracking-widest text-black/90 leading-tight">
-            Have You Seen<br/>This Party?
+          <h3 className="text-3xl sm:text-4xl font-black mb-10 uppercase tracking-widest text-black/90 leading-tight flex flex-col items-center gap-2">
+            <span>98.2K</span>
+            <span className="text-xl opacity-50">⬇</span>
+            <span>100K</span>
+            <span className="text-xl opacity-50">⬇</span>
+            <span className="text-red-600">PARTY???</span>
           </h3>
 
           <div className="border-y-4 border-black/10 py-6 mb-10 space-y-5">
             <div className="flex flex-col items-center">
               <span className="text-xs uppercase font-bold tracking-widest text-red-600 mb-1">Reward</span>
-              <span className="font-black text-xl text-black/90">Unlimited Respect</span>
+              <span className="font-black text-xl text-black/90 text-center">Unlimited Respect<br/>+ One Plate Biryani</span>
             </div>
             
             <div className="flex flex-col items-center">
               <span className="text-xs uppercase font-bold tracking-widest text-black/50 mb-1">Last Seen</span>
-              <span className="font-black text-lg text-black/90">Before 50K 😭</span>
+              <span className="font-black text-lg text-black/90">Never 😂</span>
             </div>
             
             <div className="flex flex-col items-center">
               <span className="text-xs uppercase font-bold tracking-widest text-black/50 mb-1">If Found</span>
-              <span className="font-black text-lg text-black/90">Please Feed Friends 🍕</span>
+              <span className="font-black text-lg text-black/90">Please Contact Snazzy Bois</span>
             </div>
           </div>
 
@@ -50,7 +54,7 @@ export default function MissingPoster() {
             onClick={scrollToForm}
             className="bg-red-600 text-white font-black py-5 px-8 w-full uppercase tracking-[0.2em] text-lg hover:bg-red-700 transition-colors shadow-xl shadow-red-600/30 rounded-2xl active:scale-95"
           >
-            I FOUND IT
+            HELP US FIND IT
           </button>
         </div>
       </motion.div>

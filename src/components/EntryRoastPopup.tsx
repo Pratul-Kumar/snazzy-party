@@ -46,14 +46,20 @@ export default function EntryRoastPopup() {
             className="surface max-w-md w-full p-8 sm:p-12 text-center"
           >
             <h1 className="text-4xl sm:text-5xl font-black tracking-tight mb-6">
-              Bro... 👀
+              👀 BRO...
             </h1>
             
-            <p className="text-xl sm:text-2xl font-bold text-text mb-4">
-              100K hone wala hai.
+            <p className="text-xl sm:text-2xl font-bold text-text mb-2">
+              98.2K already...
             </p>
-            <p className="text-xl sm:text-2xl font-black text-accent mb-10 uppercase tracking-widest">
-              Party kidhar hai?
+            <p className="text-xl sm:text-2xl font-bold text-text mb-2">
+              100K loading...
+            </p>
+            <p className="text-xl sm:text-2xl font-bold text-text mb-2">
+              Birthday loading...
+            </p>
+            <p className="text-xl sm:text-2xl font-black text-accent mb-10 uppercase tracking-widest mt-6">
+              Party? Still missing 😂
             </p>
 
             <label className="flex items-start justify-center gap-4 text-left mb-8 cursor-pointer group">
@@ -64,7 +70,7 @@ export default function EntryRoastPopup() {
                 className="mt-1 w-6 h-6 rounded border-[var(--border)] bg-[var(--bg)] accent-accent flex-shrink-0"
               />
               <span className="text-sm sm:text-base font-bold text-muted group-hover:text-white transition-colors">
-                I am officially hungry.
+                Yup... I&apos;m waiting too.
               </span>
             </label>
 
@@ -73,11 +79,11 @@ export default function EntryRoastPopup() {
               disabled={!agreed}
               className="btn-accent w-full py-4 text-lg font-black disabled:opacity-30 disabled:cursor-not-allowed uppercase tracking-widest"
             >
-              FIND THE PARTY
+              JOIN THE HUNT
             </button>
 
             <p className="text-[10px] text-muted mt-8 font-mono">
-              Not a government site. Just your hungry friends. 😂
+              Made by hungry friends ❤️ Fan-made parody.
             </p>
           </motion.div>
         </motion.div>

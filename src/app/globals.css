@@ -146,12 +146,11 @@ body {
 
 /* ── Layout Sections ── */
 .section-premium {
-  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 80px 20px;
+  padding: 40px 20px;
   position: relative;
   width: 100%;
   max-width: 800px;

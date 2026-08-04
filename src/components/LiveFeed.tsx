@@ -25,7 +25,7 @@ export default function LiveFeed() {
   return (
     <section className="w-full max-w-xl mx-auto py-10 px-4">
       <div className="flex items-center justify-between mb-8">
-        <h3 className="text-sm font-black uppercase tracking-widest text-muted">Live Feed</h3>
+        <h3 className="text-sm font-black uppercase tracking-widest text-muted">Hungry Friends Activity 🍿</h3>
         <div className="flex items-center gap-2 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>

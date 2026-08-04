@@ -13,6 +13,7 @@ import LuckyDraw from "@/components/LuckyDraw";
 import HungryQueue from "@/components/HungryQueue";
 import GamerTouches from "@/components/GamerTouches";
 import YouTubeSection from "@/components/YouTubeSection";
+import DoubleTrouble from "@/components/DoubleTrouble";
 import BroIsCooked from "@/components/BroIsCooked";
 import Footer from "@/components/Footer";
 
@@ -35,11 +36,12 @@ export default function Home() {
             <LiveFeed />
             
             <YouTubeSection />
+            <DoubleTrouble />
             <ProofHeForgot />
             
             <div className="section-premium !py-10">
-               <h2 className="text-4xl sm:text-5xl font-black tracking-tight mb-8 text-center uppercase">
-                 Public <span className="text-accent">Roast</span>
+               <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-8 text-center uppercase">
+                 ✍ FORCE HIM TO GIVE PARTY
                </h2>
                <ForcePartyForm />
             </div>

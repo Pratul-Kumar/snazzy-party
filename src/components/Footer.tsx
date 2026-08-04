@@ -35,7 +35,7 @@ export default function Footer() {
         </p>
 
         <p className="text-[10px] sm:text-xs text-white/30 max-w-lg mx-auto leading-relaxed mb-8">
-          ⚠ Just a fan-made parody. We just want free food for his 100K milestone. Pls share.
+          built by Snazzy Bois Group by AI for Snazzy
         </p>
       </div>
     </footer>

@@ -43,7 +43,7 @@ export default function BroIsCooked() {
         className="w-full max-w-2xl mx-auto"
       >
         <p className="text-sm font-bold text-muted uppercase tracking-[0.2em] mb-4">
-          Final Result
+          🎉 FINAL QUESTION
         </p>
 
         <div className="relative inline-block mb-12">
@@ -61,11 +61,20 @@ export default function BroIsCooked() {
         </div>
 
         <p className="text-xl sm:text-2xl font-black text-white mb-2 uppercase tracking-widest">
-          No escape now.
+          Bro... 100K + Birthday...
         </p>
-        <p className="text-sm font-bold text-muted mb-12">
-          We want the party.
+        <p className="text-sm font-bold text-muted mb-12 uppercase tracking-widest">
+          DOUBLE PARTY WHEN? 🍕
         </p>
+
+        <a 
+          href="https://www.youtube.com/@SnazzyZone" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="bg-white text-black font-black uppercase tracking-widest text-lg py-4 px-10 rounded-2xl hover:scale-105 active:scale-95 transition-transform inline-block"
+        >
+          REMIND HIM 😂
+        </a>
 
       </motion.div>
     </section>

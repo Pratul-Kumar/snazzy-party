@@ -4,13 +4,14 @@ import { useState } from "react";
 import { addPetition } from "../lib/firebase";
 import confetti from "canvas-confetti";
 import { motion, AnimatePresence } from "framer-motion";
-import ShareCard from "./ShareCard";
+import { useShare } from "../app/context/ShareContext";
 
 export default function ForcePartyForm() {
   const [name, setName] = useState("");
   const [food, setFood] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [successId, setSuccessId] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const { openShare } = useShare();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,14 +22,18 @@ export default function ForcePartyForm() {
     const id = await addPetition(name, comment, food);
     
     setSubmitting(false);
-    setSuccessId(id);
+    setSuccess(true);
     confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+    
+    setTimeout(() => {
+      openShare();
+    }, 1500);
   };
 
   return (
     <div id="petition-form" className="w-full max-w-md mx-auto mb-16 relative scroll-mt-24">
       <AnimatePresence mode="wait">
-        {!successId ? (
+        {!success ? (
           <motion.form
             key="form"
             initial={{ opacity: 0 }}
@@ -81,7 +86,7 @@ export default function ForcePartyForm() {
               disabled={submitting}
               className="bg-accent text-white w-full py-5 rounded-2xl font-black uppercase tracking-widest text-lg hover:scale-[1.02] active:scale-[0.98] transition-transform disabled:opacity-50"
             >
-              {submitting ? "FORCING..." : "FORCE HIM"}
+              {submitting ? "FORCING..." : "COUNT ME IN"}
             </button>
           </motion.form>
         ) : (
@@ -92,18 +97,25 @@ export default function ForcePartyForm() {
             className="w-full flex flex-col items-center"
           >
             <h3 className="text-2xl font-black mb-6 text-center text-accent uppercase tracking-widest">
-              You&apos;re in! 🎉
+              Welcome to THE HUNGRY BOIS 🍕
             </h3>
             
-            <ShareCard name={name} food={food} />
+            <p className="text-center text-muted mb-8 font-bold">You are officially in the queue.</p>
+            
+            <button 
+              onClick={openShare} 
+              className="bg-white text-black font-black uppercase tracking-widest text-lg py-4 px-10 rounded-2xl hover:scale-105 active:scale-95 transition-transform mb-8"
+            >
+              INVITE FRIENDS 😂
+            </button>
             
             <button 
               onClick={() => {
-                setSuccessId(null);
+                setSuccess(false);
                 setName("");
                 setFood("");
               }} 
-              className="mt-8 text-xs font-bold uppercase tracking-widest text-muted hover:text-white"
+              className="text-xs font-bold uppercase tracking-widest text-muted hover:text-white"
             >
               Add another friend
             </button>
