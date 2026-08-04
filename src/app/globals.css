@@ -7,20 +7,40 @@
   --foreground: #ffffff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #050505;
-    --foreground: #ffffff;
-  }
+/* ── Global Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-html, body {
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
   color: var(--foreground);
   background: var(--background);
   overflow-x: hidden;
+  min-height: 100vh;
+  min-height: 100dvh; /* dynamic viewport height – respects mobile notch/toolbar */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Glassmorphism utilities */
+/* ── Safe-area insets for notch devices ── */
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* ── Glassmorphism utilities ── */
 .glass {
   background: rgba(16, 16, 16, 0.6);
   backdrop-filter: blur(12px);
@@ -45,16 +65,16 @@ html, body {
   border: 1px solid rgba(255, 56, 56, 0.4);
 }
 
-/* Scrollbar styles */
+/* ── Scrollbar ── */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #050505;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #222;
-  border-radius: 4px;
+  background: #333;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #ff3838;

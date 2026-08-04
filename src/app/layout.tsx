@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} antialiased bg-background text-text`}>
+      <body className={`${inter.className} antialiased bg-background text-text min-h-screen flex flex-col`}>
         <PortalProvider>
           <SecurityPopup />
           {children}
@@ -28,4 +28,3 @@ export default function RootLayout({
     </html>
   );
 }
-

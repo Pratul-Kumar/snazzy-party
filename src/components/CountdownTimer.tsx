@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 export default function CountdownTimer() {
-  const [timeLeft, setTimeLeft] = useState(72 * 60 * 60); // 72 hours in seconds
+  const [timeLeft, setTimeLeft] = useState(72 * 60 * 60);
   const [isFinished, setIsFinished] = useState(false);
 
   useEffect(() => {
@@ -28,39 +28,39 @@ export default function CountdownTimer() {
     <section className="flex justify-center">
       <motion.div 
         whileHover={{ scale: 1.02 }}
-        className="glass-card p-8 md:p-12 rounded-3xl text-center border-t border-accent max-w-3xl w-full"
+        className="glass-card p-6 sm:p-8 md:p-12 rounded-3xl text-center border-t border-accent max-w-3xl w-full"
       >
-        <h2 className="text-xl md:text-2xl font-bold mb-8 text-gray-400 uppercase tracking-widest">
+        <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 md:mb-8 text-gray-400 uppercase tracking-widest">
           Ultimatum Deadline
         </h2>
         
         {!isFinished ? (
-          <div className="flex justify-center items-center gap-2 sm:gap-4 md:gap-8 mb-4">
+          <div className="flex justify-center items-center gap-2 sm:gap-4 md:gap-8">
             <div className="flex flex-col items-center">
-              <span className="text-3xl sm:text-4xl md:text-7xl font-black text-white font-mono">{hours.toString().padStart(2, '0')}</span>
-              <span className="text-xs sm:text-sm text-gray-500 uppercase tracking-widest mt-2">Hours</span>
+              <span className="text-2xl sm:text-4xl md:text-7xl font-black text-white font-mono">{hours.toString().padStart(2, '0')}</span>
+              <span className="text-[10px] sm:text-xs md:text-sm text-gray-500 uppercase tracking-widest mt-1 sm:mt-2">Hours</span>
             </div>
-            <span className="text-3xl sm:text-4xl md:text-7xl font-black text-accent animate-pulse">:</span>
+            <span className="text-2xl sm:text-4xl md:text-7xl font-black text-accent animate-pulse">:</span>
             <div className="flex flex-col items-center">
-              <span className="text-3xl sm:text-4xl md:text-7xl font-black text-white font-mono">{minutes.toString().padStart(2, '0')}</span>
-              <span className="text-xs sm:text-sm text-gray-500 uppercase tracking-widest mt-2">Minutes</span>
+              <span className="text-2xl sm:text-4xl md:text-7xl font-black text-white font-mono">{minutes.toString().padStart(2, '0')}</span>
+              <span className="text-[10px] sm:text-xs md:text-sm text-gray-500 uppercase tracking-widest mt-1 sm:mt-2">Minutes</span>
             </div>
-            <span className="text-3xl sm:text-4xl md:text-7xl font-black text-accent animate-pulse">:</span>
+            <span className="text-2xl sm:text-4xl md:text-7xl font-black text-accent animate-pulse">:</span>
             <div className="flex flex-col items-center">
-              <span className="text-3xl sm:text-4xl md:text-7xl font-black text-accent font-mono">{seconds.toString().padStart(2, '0')}</span>
-              <span className="text-xs sm:text-sm text-gray-500 uppercase tracking-widest mt-2">Seconds</span>
+              <span className="text-2xl sm:text-4xl md:text-7xl font-black text-accent font-mono">{seconds.toString().padStart(2, '0')}</span>
+              <span className="text-[10px] sm:text-xs md:text-sm text-gray-500 uppercase tracking-widest mt-1 sm:mt-2">Seconds</span>
             </div>
           </div>
         ) : (
           <motion.div 
             initial={{ scale: 0.5, opacity: 0 }} 
             animate={{ scale: 1, opacity: 1 }}
-            className="py-8"
+            className="py-4 sm:py-8"
           >
-            <h3 className="text-3xl md:text-5xl font-black text-accent glow-text uppercase mb-2">
+            <h3 className="text-2xl sm:text-3xl md:text-5xl font-black text-accent glow-text uppercase mb-2">
               Time is Up!
             </h3>
-            <p className="text-xl text-white font-bold">"Friends have occupied the restaurant."</p>
+            <p className="text-base sm:text-xl text-white font-bold">"Friends have occupied the restaurant."</p>
           </motion.div>
         )}
       </motion.div>

@@ -2,12 +2,12 @@
 
 export default function Footer() {
   return (
-    <footer className="mt-auto py-12 border-t border-white/10 text-center px-4 relative z-10 bg-black/50 backdrop-blur-md">
-      <div className="max-w-4xl mx-auto flex flex-col items-center gap-6">
-        <h2 className="text-2xl font-black uppercase tracking-widest text-white glow-text">
+    <footer className="mt-12 sm:mt-16 py-8 sm:py-10 border-t border-white/10 text-center px-4 sm:px-6 relative z-10 bg-black/50 backdrop-blur-md">
+      <div className="max-w-4xl mx-auto flex flex-col items-center gap-4 sm:gap-6">
+        <h2 className="text-xl sm:text-2xl font-black uppercase tracking-widest text-white glow-text">
           Party Recovery Department
         </h2>
-        <p className="text-gray-400 font-medium italic">
+        <p className="text-gray-400 font-medium italic text-sm sm:text-base">
           Recovering Pending Celebrations Since Forever™
         </p>
         
