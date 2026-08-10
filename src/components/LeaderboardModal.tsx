@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Trophy } from "lucide-react";
 import { subscribeToXPLeaderboard } from "@/lib/firebase";
+import PublicProfileModal from "./PublicProfileModal";
 
 interface LeaderboardModalProps {
   isOpen: boolean;
@@ -13,6 +14,7 @@ interface LeaderboardModalProps {
 export default function LeaderboardModal({ isOpen, onClose }: LeaderboardModalProps) {
   const [players, setPlayers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedPlayer, setSelectedPlayer] = useState<any | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -112,6 +114,12 @@ export default function LeaderboardModal({ isOpen, onClose }: LeaderboardModalPr
                       <div className="text-sm font-black text-white">{player.xp}</div>
                       <div className="text-[10px] text-muted uppercase tracking-widest">XP</div>
                     </div>
+                    <button 
+                      onClick={() => setSelectedPlayer(player)}
+                      className="p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-colors text-[10px] font-bold uppercase tracking-widest text-muted hover:text-white"
+                    >
+                      View
+                    </button>
                   </div>
                 );
               })
@@ -119,6 +127,13 @@ export default function LeaderboardModal({ isOpen, onClose }: LeaderboardModalPr
           </div>
         </motion.div>
       </div>
+
+      {/* Public Profile Modal */}
+      <PublicProfileModal
+        isOpen={!!selectedPlayer}
+        onClose={() => setSelectedPlayer(null)}
+        profile={selectedPlayer}
+      />
     </AnimatePresence>
   );
 }

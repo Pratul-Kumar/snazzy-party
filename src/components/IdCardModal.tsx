@@ -46,22 +46,33 @@ export default function IdCardModal({ isOpen, onClose }: IdCardModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    
+    if ((authTab === "quick" || authTab === "signup") && (!name.trim() || !side)) {
+      toast.error("Enter name and side!");
+      setIsLoading(false);
+      return;
+    }
+
+    if ((authTab === "signup" || authTab === "login") && (!email || !password)) {
+      toast.error("Enter email and password!");
+      setIsLoading(false);
+      return;
+    }
+
+    let processedEmail = email.trim().toLowerCase();
+    if (!processedEmail.includes("@")) {
+      processedEmail = `${processedEmail}@snazzybois.local`;
+    }
+
     try {
-      if (authTab === "quick" || authTab === "signup") {
-        if (!name.trim()) { toast.error("Enter your name!"); return; }
-        if (!side) { toast.error("Choose your side!"); return; }
-      }
-      
       if (authTab === "quick") {
         createIdentity(name.trim(), side as "🍕" | "🍗");
         toast.success("Identity Created!");
       } else if (authTab === "signup") {
-        if (!email || !password) { toast.error("Enter email and password!"); return; }
-        await signUpWithEmail(email, password, name.trim(), side as "🍕" | "🍗");
+        await signUpWithEmail(processedEmail, password, name.trim(), side as "🍕" | "🍗");
         toast.success("Account Created!");
       } else if (authTab === "login") {
-        if (!email || !password) { toast.error("Enter email and password!"); return; }
-        await logInWithEmail(email, password);
+        await logInWithEmail(processedEmail, password);
         toast.success("Logged in!");
       }
     } catch (err: any) {
@@ -223,10 +234,10 @@ export default function IdCardModal({ isOpen, onClose }: IdCardModalProps) {
                 {(authTab === "signup" || authTab === "login") && (
                   <>
                     <input
-                      type="email"
+                      type="text"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Email address..."
+                      placeholder="Email or Username..."
                       className="w-full bg-black/50 border border-white/10 p-3 rounded-xl text-white placeholder:text-white/30 text-sm focus:outline-none"
                     />
                     <div className="relative">
