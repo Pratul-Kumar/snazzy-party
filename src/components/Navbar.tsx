@@ -11,7 +11,7 @@ interface NavbarProps {
 }
 
 export default function Navbar({ onPlayClick, onIdClick }: NavbarProps) {
-  const { profile, hasIdentity } = useUser();
+  const { profile, hasIdentity, getRank } = useUser();
   const { hasEntered } = usePortal();
 
   if (!hasEntered) return null;
@@ -70,13 +70,16 @@ export default function Navbar({ onPlayClick, onIdClick }: NavbarProps) {
 
           <button
             onClick={onIdClick}
-            className="flex items-center gap-2 text-white/80 hover:text-white transition-colors"
+            className="flex items-center gap-2 text-white/80 hover:text-white transition-colors p-1"
           >
             <IdCard className="w-5 h-5 md:w-4 md:h-4" />
             {hasIdentity && profile?.name && (
-              <span className="hidden md:inline-block text-xs font-medium">
-                {profile.name.split(' ')[0]}
-              </span>
+              <div className="hidden md:flex flex-col items-start text-left">
+                <span className="text-xs font-bold leading-none mb-[2px]">{profile.name.split(' ')[0]}</span>
+                <span className="text-[9px] font-black uppercase tracking-widest text-accent leading-none">
+                  {getRank().title}
+                </span>
+              </div>
             )}
           </button>
         </div>
