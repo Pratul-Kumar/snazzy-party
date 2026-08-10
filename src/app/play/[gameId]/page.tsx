@@ -26,6 +26,13 @@ interface GameState {
   createdAt: number;
   matchId: string;
   rewarded?: boolean;
+  rematchRequestedBy?: string | null;
+  lastAction?: {
+    playerId: string;
+    type: "reaction" | "message";
+    content: string;
+    timestamp: number;
+  };
 }
 
 const WINNING_COMBINATIONS = [
@@ -150,6 +157,38 @@ export default function GameRoom() {
     return () => unsubscribe();
   }, [gameId, myId, processReward, localStatsUpdated, hasIdentity, updateStat, awardXP, profile]);
 
+  // Listener for Live Reactions/Messages
+  const prevActionTimestamp = useRef<number>(0);
+  useEffect(() => {
+    if (gameState?.lastAction && gameState.lastAction.playerId !== myId) {
+      if (gameState.lastAction.timestamp > prevActionTimestamp.current) {
+        prevActionTimestamp.current = gameState.lastAction.timestamp;
+        
+        const senderName = gameState.lastAction.playerId === gameState.player1.id ? gameState.player1.name : gameState.player2?.name;
+        
+        if (gameState.lastAction.type === "reaction") {
+          toast(`${senderName}: ${gameState.lastAction.content}`, { 
+            icon: gameState.lastAction.content,
+            position: "top-center",
+            style: { background: '#111', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }
+          });
+        } else {
+          toast.custom((t) => (
+            <motion.div
+              initial={{ opacity: 0, y: -20, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-[#111] border border-white/20 p-4 rounded-2xl shadow-2xl max-w-sm flex flex-col gap-1"
+            >
+              <span className="text-[10px] font-black uppercase tracking-widest text-accent">{senderName} says:</span>
+              <span className="text-sm font-bold text-white">{gameState.lastAction!.content}</span>
+            </motion.div>
+          ));
+        }
+      }
+    }
+  }, [gameState?.lastAction, myId]);
+
   const joinGame = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!joinName || !gameState || !myId) return;
@@ -200,6 +239,12 @@ export default function GameRoom() {
   };
 
   const requestRematch = async () => {
+    await update(ref(rtdb, `games/${gameId}`), {
+      rematchRequestedBy: myId
+    });
+  };
+
+  const acceptRematch = async () => {
     const newMatchId = Math.random().toString(36).substr(2, 9);
     await update(ref(rtdb, `games/${gameId}`), {
       board: Array(9).fill(""),
@@ -207,8 +252,29 @@ export default function GameRoom() {
       winner: null,
       matchId: newMatchId,
       rewarded: false,
+      rematchRequestedBy: null,
       turn: gameState?.player1.id
     });
+  };
+
+  const declineRematch = async () => {
+    await update(ref(rtdb, `games/${gameId}`), {
+      rematchRequestedBy: null
+    });
+    toast.error("Rematch declined");
+  };
+
+  const sendAction = async (type: "reaction" | "message", content: string) => {
+    if (!myId) return;
+    await update(ref(rtdb, `games/${gameId}`), {
+      lastAction: {
+        playerId: myId,
+        type,
+        content,
+        timestamp: Date.now()
+      }
+    });
+    toast.success("Sent!", { position: "bottom-center", icon: "💨" });
   };
 
   const shareResult = async () => {
@@ -376,20 +442,44 @@ export default function GameRoom() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-3">
-                <button 
-                  onClick={requestRematch}
-                  className="bg-white/10 hover:bg-white/20 py-3 rounded-xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2"
-                >
-                  <RefreshCw size={14} /> Rematch
-                </button>
-                <button 
-                  onClick={shareResult}
-                  className="bg-white text-black py-3 rounded-xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2"
-                >
-                  <Share2 size={14} /> Share
-                </button>
-              </div>
+              {gameState.rematchRequestedBy === myId ? (
+                <div className="bg-white/5 border border-white/10 py-4 rounded-xl mb-4">
+                  <p className="text-xs font-bold uppercase tracking-widest text-gold animate-pulse">Waiting for opponent to accept...</p>
+                </div>
+              ) : gameState.rematchRequestedBy && gameState.rematchRequestedBy !== myId ? (
+                <div className="mb-4">
+                  <p className="text-xs font-black uppercase tracking-widest text-accent mb-3">🔥 Opponent wants a rematch! 🔥</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button 
+                      onClick={acceptRematch}
+                      className="bg-accent text-white py-3 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-accent/90 transition-colors"
+                    >
+                      Accept
+                    </button>
+                    <button 
+                      onClick={declineRematch}
+                      className="bg-white/10 text-white py-3 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-white/20 transition-colors"
+                    >
+                      Decline
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-3">
+                  <button 
+                    onClick={requestRematch}
+                    className="bg-white/10 hover:bg-white/20 py-3 rounded-xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2"
+                  >
+                    <RefreshCw size={14} /> Rematch
+                  </button>
+                  <button 
+                    onClick={shareResult}
+                    className="bg-white text-black py-3 rounded-xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Share2 size={14} /> Share
+                  </button>
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -403,6 +493,30 @@ export default function GameRoom() {
             <button onClick={shareResult} className="bg-accent text-white py-4 rounded-2xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 hover:bg-accent/90">
               <Share2 size={14} /> Share Invite
             </button>
+          </div>
+        )}
+
+        {/* Live Banter Menu (only when playing and a participant) */}
+        {gameState.status === "playing" && !isSpectator && (
+          <div className="mt-auto pt-8 flex flex-col gap-2">
+            <p className="text-[9px] font-black uppercase tracking-widest text-muted text-center mb-1">Live Banter</p>
+            <div className="flex gap-2 justify-center mb-2">
+              {['🤡', '💀', '🔥', '😡', '👀'].map(emoji => (
+                <button 
+                  key={emoji}
+                  onClick={() => sendAction("reaction", emoji)}
+                  className="bg-white/5 hover:bg-white/10 p-3 rounded-full text-xl transition-transform active:scale-90"
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <button onClick={() => sendAction("message", "Bro is taking hours to move 😂")} className="bg-white/5 hover:bg-white/10 p-2 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/70 truncate">Taking hours 😂</button>
+              <button onClick={() => sendAction("message", "Wallet Loading... 💳")} className="bg-white/5 hover:bg-white/10 p-2 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/70 truncate">Wallet Loading 💳</button>
+              <button onClick={() => sendAction("message", "You're getting cooked! 🍗")} className="bg-white/5 hover:bg-white/10 p-2 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/70 truncate">Getting cooked 🍗</button>
+              <button onClick={() => sendAction("message", "EZ WIN 😎")} className="bg-white/5 hover:bg-white/10 p-2 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/70 truncate">EZ WIN 😎</button>
+            </div>
           </div>
         )}
       </div>
