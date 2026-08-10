@@ -38,6 +38,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100dvh;
+  padding-top: 56px;
+}
+
+@media (max-width: 767px) {
+  body {
+    padding-top: 48px;
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 /* ── Typography ── */

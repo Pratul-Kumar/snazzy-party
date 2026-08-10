@@ -10,9 +10,22 @@ interface PortalContextProps {
 const PortalContext = createContext<PortalContextProps | undefined>(undefined);
 
 export const PortalProvider = ({ children }: { children: ReactNode }) => {
-  const [hasEntered, setHasEntered] = useState(false);
+  const [hasEntered, setHasEntered] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const lastTime = localStorage.getItem('lastEntryPopupTime');
+      if (lastTime && Date.now() - parseInt(lastTime, 10) < 10 * 60 * 1000) {
+        return true;
+      }
+    }
+    return false;
+  });
 
-  const enterPortal = () => setHasEntered(true);
+  const enterPortal = () => {
+    setHasEntered(true);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lastEntryPopupTime', Date.now().toString());
+    }
+  };
 
   const generateId = (prefix: string, length = 5) => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';

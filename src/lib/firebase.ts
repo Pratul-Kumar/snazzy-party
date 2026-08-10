@@ -13,6 +13,7 @@ import {
   increment,
   updateDoc
 } from "firebase/firestore";
+import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAkukCUCxT7r9eKlRzWu39M3Ypj6uS_yIE",
@@ -21,11 +22,13 @@ const firebaseConfig = {
   storageBucket: "snazzybois.firebasestorage.app",
   messagingSenderId: "265898823571",
   appId: "1:265898823571:web:eb3012515a7120a0dbe266",
-  measurementId: "G-W6R4PB9MES"
+  measurementId: "G-W6R4PB9MES",
+  databaseURL: "https://snazzybois-default-rtdb.firebaseio.com"
 };
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const rtdb = getDatabase(app);
 
 // --- Live Events Feed ---
 // Combines petitions, votes, and excuses into one feed.
@@ -54,7 +57,7 @@ export const trackEvent = async (type: "PETITION" | "VOTE" | "EXCUSE", message: 
   });
 };
 
-// --- Petitions ---
+// --- Petitions (V1 - Legacy) ---
 export const addPetition = async (name: string, comment: string, food: string) => {
   const docRef = await addDoc(collection(db, "petitions"), {
     name,
@@ -68,6 +71,73 @@ export const addPetition = async (name: string, comment: string, food: string) =
   
   return docRef.id.slice(0, 6).toUpperCase();
 };
+
+// --- Petitions V2 (Community Wall) ---
+export interface PetitionV2 {
+  id?: string;
+  username: string;
+  userId: string;
+  text: string;
+  foodChoice?: string;
+  createdAt: number;
+  reactions: {
+    love: number;
+    funny: number;
+    hungry: number;
+    facts: number;
+  };
+  pressureAwarded: number;
+}
+
+export const submitPetitionV2 = async (petition: Omit<PetitionV2, "id" | "createdAt" | "reactions" | "pressureAwarded">) => {
+  const docRef = await addDoc(collection(db, "petitions_v2"), {
+    ...petition,
+    createdAt: Date.now(),
+    reactions: {
+      love: 0,
+      funny: 0,
+      hungry: 0,
+      facts: 0,
+    },
+    pressureAwarded: 5,
+  });
+
+  await trackEvent("PETITION", `@${petition.username} signed the petition`, petition.foodChoice ? `Required: ${petition.foodChoice}` : "");
+  return docRef.id;
+};
+
+export const subscribeToPetitionsV2 = (callback: (data: PetitionV2[]) => void) => {
+  const q = query(
+    collection(db, "petitions_v2"),
+    orderBy("createdAt", "desc"),
+    limit(50)
+  );
+
+  return onSnapshot(q, (snapshot) => {
+    const petitions = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as PetitionV2[];
+    callback(petitions);
+  });
+};
+
+export const reactToPetition = async (petitionId: string, reactionType: "love" | "funny" | "hungry" | "facts") => {
+  const docRef = doc(db, "petitions_v2", petitionId);
+  await updateDoc(docRef, {
+    [`reactions.${reactionType}`]: increment(1)
+  });
+};
+
+export const getPetition = async (petitionId: string): Promise<PetitionV2 | null> => {
+  const docRef = doc(db, "petitions_v2", petitionId);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    return { id: docSnap.id, ...docSnap.data() } as PetitionV2;
+  }
+  return null;
+};
+
 
 // --- Polls ---
 const POLL_DOC_ID = "food_results";
@@ -151,3 +221,59 @@ export const trackGeneratedExcuse = async (excuse: string) => {
     }
   }
 };
+
+// --- Party Arena Leaderboard ---
+const ARENA_DOC_ID = "party_arena";
+
+export const subscribeToArenaLeaderboard = (callback: (data: any) => void) => {
+  const docRef = doc(db, "leaderboards", ARENA_DOC_ID);
+  return onSnapshot(docRef, (docSnap) => {
+    if (docSnap.exists()) {
+      callback(docSnap.data());
+    } else {
+      callback({});
+    }
+  });
+};
+
+export const updateArenaWin = async (playerName: string) => {
+  const docRef = doc(db, "leaderboards", ARENA_DOC_ID);
+  try {
+    await updateDoc(docRef, {
+      [playerName]: increment(1)
+    });
+  } catch (error: any) {
+    if (error.code === 'not-found') {
+      await setDoc(docRef, {
+        [playerName]: 1,
+      });
+    }
+  }
+};
+
+// --- XP System (New) ---
+export const syncUserProfile = async (profile: any) => {
+  if (!profile || !profile.odId) return;
+  const docRef = doc(db, "users", profile.odId);
+  try {
+    await setDoc(docRef, profile, { merge: true });
+  } catch (error) {
+    console.error("Error syncing profile:", error);
+  }
+};
+
+export const subscribeToXPLeaderboard = (callback: (data: any[]) => void) => {
+  const q = query(
+    collection(db, "users"),
+    orderBy("level", "desc"),
+    orderBy("xp", "desc"),
+    orderBy("stats.wins", "desc"),
+    limit(20)
+  );
+
+  return onSnapshot(q, (snapshot) => {
+    const users = snapshot.docs.map(doc => doc.data());
+    callback(users);
+  });
+};
+

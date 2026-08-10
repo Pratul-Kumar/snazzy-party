@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { usePortal } from "../app/context/PortalContext";
 import confetti from "canvas-confetti";
 import { useEffect, useState } from "react";
+import { CONFIG } from "../lib/config";
 
 export default function EntryRoastPopup() {
   const { hasEntered, enterPortal } = usePortal();
@@ -50,7 +51,7 @@ export default function EntryRoastPopup() {
             </h1>
             
             <p className="text-xl sm:text-2xl font-bold text-text mb-2">
-              98.2K already...
+              {CONFIG.SUBSCRIBER_COUNT} already...
             </p>
             <p className="text-xl sm:text-2xl font-bold text-text mb-2">
               100K loading...

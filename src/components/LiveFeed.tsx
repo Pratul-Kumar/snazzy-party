@@ -6,6 +6,7 @@ import { subscribeToEvents } from "../lib/firebase";
 
 export default function LiveFeed() {
   const [events, setEvents] = useState<any[]>([]);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     const unsubscribe = subscribeToEvents((data) => {
@@ -35,10 +36,10 @@ export default function LiveFeed() {
         </div>
       </div>
 
-      <div className="h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+      <div className={showAll ? "h-[400px] overflow-y-auto pr-2 custom-scrollbar" : ""}>
         <div className="space-y-3">
           <AnimatePresence initial={false}>
-            {events.map((evt) => (
+            {(showAll ? events : events.slice(0, 3)).map((evt) => (
               <motion.div
                 key={evt.id}
                 initial={{ opacity: 0, x: -20, scale: 0.95 }}
@@ -74,6 +75,17 @@ export default function LiveFeed() {
           )}
         </div>
       </div>
+      
+      {events.length > 3 && (
+        <div className="mt-6 text-center">
+          <button
+            onClick={() => setShowAll(!showAll)}
+            className="text-xs font-bold uppercase tracking-wider text-muted hover:text-white transition-colors"
+          >
+            {showAll ? "Show Less" : "View All"}
+          </button>
+        </div>
+      )}
       
       <style dangerouslySetInnerHTML={{__html: `
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }

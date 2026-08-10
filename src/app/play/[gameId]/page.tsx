@@ -1,0 +1,411 @@
+"use client";
+
+import { useEffect, useState, useRef, useCallback } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { ref, onValue, update } from "firebase/database";
+import { rtdb, trackEvent, updateArenaWin } from "@/lib/firebase";
+import { CONFIG } from "@/lib/config";
+import { Copy, Share2, RefreshCw } from "lucide-react";
+import toast from "react-hot-toast";
+import { useUser } from "@/app/context/UserContext";
+
+interface Player {
+  id: string;
+  name: string;
+  side: "🍕" | "🍗";
+}
+
+interface GameState {
+  player1: Player;
+  player2?: Player;
+  board: (string | null)[];
+  turn: string;
+  status: "waiting" | "playing" | "won" | "draw";
+  winner?: string;
+  createdAt: number;
+  matchId: string;
+  rewarded?: boolean;
+}
+
+const WINNING_COMBINATIONS = [
+  [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+  [0, 3, 6], [1, 4, 7], [2, 5, 8], // Cols
+  [0, 4, 8], [2, 4, 6]             // Diagonals
+];
+
+export default function GameRoom() {
+  const params = useParams();
+  const router = useRouter();
+  const gameId = params.gameId as string;
+  
+  const [gameState, setGameState] = useState<GameState | null>(null);
+  const [myId, setMyId] = useState<string | null>(null);
+  const [joinName, setJoinName] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [localStatsUpdated, setLocalStatsUpdated] = useState(false);
+  const { updateStat, hasIdentity, awardXP, profile } = useUser();
+
+  // Initialize my ID
+  useEffect(() => {
+    let storedId = localStorage.getItem(`snazzy_arena_id`);
+    if (!storedId) {
+      storedId = "p_" + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem(`snazzy_arena_id`, storedId);
+    }
+    setMyId(storedId);
+
+    // Also check if we created THIS specific game and set our ID to 'p1' for it
+    const creatorState = localStorage.getItem(`snazzy_arena_${gameId}`);
+    if (creatorState) {
+      const parsed = JSON.parse(creatorState);
+      if (parsed.id === "p1") {
+        setMyId("p1");
+      }
+    }
+  }, [gameId]);
+
+  // Process global reward — defined before the effect that uses it
+  const processReward = useCallback(async (data: GameState) => {
+    // Lock the reward
+    await update(ref(rtdb, `games/${gameId}`), { rewarded: true });
+    
+    if (data.status === "won" && data.winner) {
+      const winnerName = data.winner === data.player1.id ? data.player1.name : data.player2?.name;
+      const loserName = data.winner === data.player1.id ? data.player2?.name : data.player1.name;
+      
+      await trackEvent("ARENA", `${winnerName} DESTROYED ${loserName} in Tic-Tac-Toe!`, `+10 Party Pressure`);
+      if (winnerName) await updateArenaWin(winnerName);
+    } else if (data.status === "draw") {
+      await trackEvent("ARENA", `${data.player1.name} and ${data.player2?.name} drew.`, `Nobody won.`);
+    }
+  }, [gameId]);
+
+  // Subscribe to RTDB
+  useEffect(() => {
+    const gameRef = ref(rtdb, `games/${gameId}`);
+    const unsubscribe = onValue(gameRef, (snapshot) => {
+      setLoading(false);
+      const data = snapshot.val();
+      if (data) {
+        // Firebase RTDB strips nulls from arrays — normalize board
+        const normalizedData = {
+          ...data,
+          board: Array.isArray(data.board) 
+            ? data.board.map((cell: any) => cell || "") 
+            : Array(9).fill("")
+        };
+        setGameState(normalizedData);
+        
+        // Handle global rewarding once (only P1 does this)
+        if ((normalizedData.status === "won" || normalizedData.status === "draw") && !normalizedData.rewarded && myId) {
+          if (myId === normalizedData.player1.id) {
+            processReward(normalizedData);
+          }
+        }
+
+        // Handle local XP and stats (Both players do this)
+        if ((normalizedData.status === "won" || normalizedData.status === "draw") && !localStatsUpdated && myId) {
+          if (hasIdentity) {
+            updateStat("gamesPlayed", 1);
+            awardXP("TICTACTOE_PLAY");
+
+            if (normalizedData.status === "won") {
+              if (normalizedData.winner === myId) {
+                updateStat("wins", 1);
+                updateStat("partyPressure", 10);
+                awardXP("TICTACTOE_WIN");
+                
+                // Track streak logic locally for achievement
+                if (profile) {
+                  const newStreak = profile.stats.currentWinStreak + 1;
+                  updateStat("currentWinStreak", 1);
+                  if (newStreak >= 5) {
+                    awardXP("TICTACTOE_STREAK_5", `streak_5_${gameId}`);
+                  }
+                }
+              } else {
+                updateStat("losses", 1);
+                updateStat("partyPressure", 2);
+                // Reset streak
+                if (profile && profile.stats.currentWinStreak > 0) {
+                  updateStat("currentWinStreak", -profile.stats.currentWinStreak);
+                }
+              }
+            } else if (normalizedData.status === "draw") {
+              updateStat("draws", 1);
+              awardXP("TICTACTOE_DRAW");
+              if (profile && profile.stats.currentWinStreak > 0) {
+                  updateStat("currentWinStreak", -profile.stats.currentWinStreak);
+              }
+            }
+          }
+          setLocalStatsUpdated(true);
+        }
+      } else {
+        setGameState(null); // Game expired or not found
+      }
+    });
+
+    return () => unsubscribe();
+  }, [gameId, myId, processReward, localStatsUpdated, hasIdentity, updateStat, awardXP, profile]);
+
+  const joinGame = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!joinName || !gameState || !myId) return;
+
+    const side = gameState.player1.side === "🍕" ? "🍗" : "🍕";
+    const newMatchId = Math.random().toString(36).substr(2, 9);
+    
+    await update(ref(rtdb, `games/${gameId}`), {
+      player2: { id: myId, name: joinName, side },
+      status: "playing",
+      matchId: newMatchId,
+      rewarded: false
+    });
+  };
+
+  const makeMove = async (index: number) => {
+    if (!gameState || gameState.status !== "playing" || gameState.turn !== myId) return;
+    if (gameState.board[index] !== "") return;
+
+    const newBoard = [...gameState.board];
+    const mySide = myId === gameState.player1.id ? gameState.player1.side : gameState.player2?.side;
+    newBoard[index] = mySide || "";
+
+    // Check for win
+    let winner = null;
+    let status = "playing";
+    
+    for (const combo of WINNING_COMBINATIONS) {
+      if (newBoard[combo[0]] && newBoard[combo[0]] === newBoard[combo[1]] && newBoard[combo[0]] === newBoard[combo[2]]) {
+        winner = myId;
+        status = "won";
+        break;
+      }
+    }
+
+    if (!winner && !newBoard.includes("")) {
+      status = "draw";
+    }
+
+    const nextTurn = myId === gameState.player1.id ? gameState.player2?.id : gameState.player1.id;
+
+    await update(ref(rtdb, `games/${gameId}`), {
+      board: newBoard,
+      turn: nextTurn,
+      status,
+      winner
+    });
+  };
+
+  const requestRematch = async () => {
+    const newMatchId = Math.random().toString(36).substr(2, 9);
+    await update(ref(rtdb, `games/${gameId}`), {
+      board: Array(9).fill(""),
+      status: "playing",
+      winner: null,
+      matchId: newMatchId,
+      rewarded: false,
+      turn: gameState?.player1.id
+    });
+  };
+
+  const shareResult = async () => {
+    const myName = myId === gameState?.player1.id ? gameState?.player1.name : gameState?.player2?.name;
+    const msg = `🎮 I JUST WON THE SNAZZY PARTY BATTLE\n\n${myName} destroyed the opposition.\nScore: 1-0\nParty Pressure: +10\n\nYour turn to challenge me 😂\n${CONFIG.DOMAIN}/play/${gameId}`;
+    
+    if (navigator.share) {
+      await navigator.share({
+        title: "Snazzy Party Arena Winner",
+        text: msg,
+        url: `${CONFIG.DOMAIN}/play/${gameId}`
+      });
+    } else {
+      navigator.clipboard.writeText(msg);
+      toast.success("Result copied!");
+    }
+  };
+
+  const copyInvite = () => {
+    const msg = `Bro 😂\n\nStop scrolling.\nCome beat me at Tic-Tac-Toe.\nLoser gets reminded about Snazzy's missing party.\n\nJoin here 👇\n${CONFIG.DOMAIN}/play/${gameId}`;
+    navigator.clipboard.writeText(msg);
+    toast.success("Invite copied!");
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
+        <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!gameState) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#0a0a0a] text-center">
+        <h2 className="text-2xl font-black text-white mb-2 uppercase tracking-widest">Game Expired</h2>
+        <p className="text-muted mb-8">This party arena is closed.</p>
+        <button onClick={() => router.push('/')} className="bg-white text-black px-8 py-3 rounded-xl font-bold uppercase">Back to Home</button>
+      </div>
+    );
+  }
+
+  const amIPlayer1 = myId === gameState.player1.id;
+  const amIPlayer2 = gameState.player2 && myId === gameState.player2.id;
+  const isMyTurn = gameState.turn === myId;
+  const isSpectator = !amIPlayer1 && (!amIPlayer2 && gameState.player2);
+
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col items-center p-4 font-sans noise overflow-hidden relative">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-accent/5 rounded-full blur-[100px] pointer-events-none" />
+      
+      <div className="w-full max-w-[400px] relative z-10 flex flex-col min-h-[90dvh]">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8 pt-4">
+          <button onClick={() => router.push('/')} className="text-xs font-bold uppercase tracking-widest text-muted hover:text-white">
+            ← Home
+          </button>
+          <div className="bg-white/10 px-3 py-1 rounded-full border border-white/10 text-[10px] font-black uppercase tracking-widest text-accent">
+            Live Arena
+          </div>
+        </div>
+
+        {/* Players / Status */}
+        <div className="bg-[#111] border border-white/10 p-4 rounded-3xl mb-8 flex justify-between items-center relative shadow-2xl">
+          <div className="text-center flex-1">
+            <span className="text-3xl block mb-1">{gameState.player1.side}</span>
+            <span className="text-xs font-bold uppercase tracking-widest block truncate max-w-[100px] mx-auto">{gameState.player1.name}</span>
+          </div>
+          
+          <div className="text-center px-4 font-black text-xl italic text-white/20">VS</div>
+          
+          <div className="text-center flex-1">
+            <span className="text-3xl block mb-1">{gameState.player2 ? gameState.player2.side : "⏳"}</span>
+            <span className="text-xs font-bold uppercase tracking-widest block truncate max-w-[100px] mx-auto">
+              {gameState.player2 ? gameState.player2.name : "Waiting..."}
+            </span>
+          </div>
+        </div>
+
+        {/* Status Message */}
+        <div className="text-center mb-8 h-8">
+          {gameState.status === "waiting" && amIPlayer1 && (
+             <p className="text-sm font-bold uppercase tracking-widest text-gold animate-pulse">Waiting for challenger...</p>
+          )}
+          {gameState.status === "playing" && (
+            <p className="text-sm font-bold uppercase tracking-widest">
+              {isMyTurn ? <span className="text-accent">Your move bro 👀</span> : <span className="text-muted">Opponent is cooking...</span>}
+            </p>
+          )}
+        </div>
+
+        {/* The Board */}
+        {gameState.status !== "waiting" || amIPlayer1 ? (
+          <div className="grid grid-cols-3 gap-3 mb-8 mx-auto w-full max-w-[320px]">
+            {gameState.board.map((cell, idx) => (
+              <motion.button
+                key={idx}
+                whileTap={isMyTurn && !cell && gameState.status === "playing" ? { scale: 0.9 } : {}}
+                onClick={() => makeMove(idx)}
+                disabled={!isMyTurn || cell !== "" || gameState.status !== "playing"}
+                className={`aspect-square rounded-2xl flex items-center justify-center text-5xl bg-[#1a1a1a] border border-white/5 shadow-inner transition-colors
+                  ${!cell && isMyTurn && gameState.status === "playing" ? 'hover:bg-white/10 cursor-pointer' : 'cursor-default'}
+                  ${cell ? 'bg-white/5' : ''}
+                `}
+              >
+                <AnimatePresence>
+                  {cell && (
+                    <motion.span
+                      initial={{ scale: 0, opacity: 0, rotate: -45 }}
+                      animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                      className="drop-shadow-lg"
+                    >
+                      {cell}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </motion.button>
+            ))}
+          </div>
+        ) : (
+          /* Join Game Form */
+          <div className="bg-[#111] p-6 rounded-3xl border border-white/10 mb-8 mx-auto w-full max-w-[320px]">
+            <h3 className="text-lg font-black uppercase mb-4 text-center">🎮 You&apos;ve been challenged</h3>
+            <p className="text-xs font-bold text-muted text-center mb-6">{gameState.player1.name} thinks they can beat you.</p>
+            
+            <form onSubmit={joinGame}>
+              <input 
+                type="text" 
+                value={joinName}
+                onChange={(e) => setJoinName(e.target.value)}
+                placeholder="Your Name"
+                required
+                maxLength={15}
+                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 font-bold text-sm text-center focus:outline-none focus:border-accent mb-4"
+              />
+              <button 
+                type="submit"
+                className="w-full bg-accent text-white py-3 rounded-xl font-black uppercase tracking-widest text-xs hover:scale-[1.02] active:scale-[0.98] transition-transform"
+              >
+                Accept Challenge
+              </button>
+            </form>
+          </div>
+        )}
+
+        {/* End Game Overlay */}
+        <AnimatePresence>
+          {(gameState.status === "won" || gameState.status === "draw") && !isSpectator && (
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-auto bg-[#111] border border-white/10 rounded-3xl p-6 shadow-2xl text-center"
+            >
+              <h3 className="text-2xl font-black uppercase tracking-tight mb-2">
+                {gameState.status === "draw" ? "🤝 DRAW" : gameState.winner === myId ? "🎉 YOU WON!" : "😂 YOU LOST"}
+              </h3>
+              
+              <p className="text-xs font-bold uppercase tracking-widest text-muted mb-6">
+                {gameState.status === "draw" ? "Just like the party planning." : gameState.winner === myId ? "BIG BRAIN DETECTED 🧠" : "Don't worry bro, you can still sign the petition."}
+              </p>
+
+              {gameState.status === "won" && gameState.winner === myId && (
+                <div className="inline-block bg-accent/10 border border-accent/20 text-accent px-4 py-2 rounded-xl mb-6 font-black uppercase tracking-widest text-xs">
+                  Party Pressure +10
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-3">
+                <button 
+                  onClick={requestRematch}
+                  className="bg-white/10 hover:bg-white/20 py-3 rounded-xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2"
+                >
+                  <RefreshCw size={14} /> Rematch
+                </button>
+                <button 
+                  onClick={shareResult}
+                  className="bg-white text-black py-3 rounded-xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2"
+                >
+                  <Share2 size={14} /> Share
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Waiting invite actions */}
+        {gameState.status === "waiting" && amIPlayer1 && (
+          <div className="mt-auto grid grid-cols-2 gap-3">
+            <button onClick={copyInvite} className="bg-white/10 text-white py-4 rounded-2xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 hover:bg-white/20">
+              <Copy size={14} /> Copy Link
+            </button>
+            <button onClick={shareResult} className="bg-accent text-white py-4 rounded-2xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 hover:bg-accent/90">
+              <Share2 size={14} /> Share Invite
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

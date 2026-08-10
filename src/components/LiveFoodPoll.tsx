@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { subscribeToFoodPoll, voteFoodPoll } from "../lib/firebase";
 import { motion } from "framer-motion";
 import { useShare } from "../app/context/ShareContext";
+import { useUser } from "../app/context/UserContext";
 import toast from "react-hot-toast";
 
 const OPTIONS = [
@@ -32,6 +33,7 @@ export default function LiveFoodPoll() {
   const [pollData, setPollData] = useState<Record<string, number>>({});
   const [hasVoted, setHasVoted] = useState(false);
   const { openShare } = useShare();
+  const { updateStat, hasIdentity } = useUser();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -72,6 +74,11 @@ export default function LiveFoodPoll() {
     await voteFoodPoll(option);
     setHasVoted(true);
     localStorage.setItem("snazzy_food_voted", "true");
+    
+    if (hasIdentity) {
+      updateStat("pollVoted", 1);
+      updateStat("partyPressure", 5);
+    }
     
     setTimeout(() => {
       openShare();

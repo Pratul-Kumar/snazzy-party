@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { CONFIG } from "../lib/config";
 
 export default function MissingPoster() {
   const scrollToForm = () => {
@@ -26,7 +27,7 @@ export default function MissingPoster() {
           </div>
 
           <h3 className="text-3xl sm:text-4xl font-black mb-10 uppercase tracking-widest text-black/90 leading-tight flex flex-col items-center gap-2">
-            <span>98.2K</span>
+            <span>{CONFIG.SUBSCRIBER_COUNT}</span>
             <span className="text-xl opacity-50">⬇</span>
             <span>100K</span>
             <span className="text-xl opacity-50">⬇</span>

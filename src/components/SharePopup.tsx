@@ -7,6 +7,8 @@ import { QRCodeSVG } from "qrcode.react";
 import html2canvas from "html2canvas";
 import { Download, Share2, Copy, X } from "lucide-react";
 import toast from "react-hot-toast";
+import { CONFIG } from "../lib/config";
+import { useUser } from "../app/context/UserContext";
 
 const BADGES = [
   "🍕 Pizza Inspector",
@@ -21,14 +23,15 @@ const BADGES = [
 ];
 
 const WA_MESSAGES = [
-  "😂 BREAKING NEWS\n98.2K ✔\nBirthday Coming ✔\nParty ❌\nJoin the hunt 😂\nhttps://snazzyparty.vercel.app",
-  "🚨 MISSING\nItem: 🍕 Party\nReward: Unlimited Respect\nHelp us find it 👇\nhttps://snazzyparty.vercel.app",
-  "Mission Update 🎮\nMain Quest: Find The Missing Party\nDifficulty: IMPOSSIBLE 😂\nNeed Backup 👇\nhttps://snazzyparty.vercel.app",
-  "Bro...\nWe signed the petition.\nNow it's your turn 😂\nhttps://snazzyparty.vercel.app"
+  `😂 BREAKING NEWS\n${CONFIG.SUBSCRIBER_COUNT} ✔\nBirthday Coming ✔\nParty ❌\nJoin the hunt 😂\n${CONFIG.DOMAIN}`,
+  `🚨 MISSING\nItem: 🍕 Party\nReward: Unlimited Respect\nHelp us find it 👇\n${CONFIG.DOMAIN}`,
+  `Mission Update 🎮\nMain Quest: Find The Missing Party\nDifficulty: IMPOSSIBLE 😂\nNeed Backup 👇\n${CONFIG.DOMAIN}`,
+  `Bro...\nWe signed the petition.\nNow it's your turn 😂\n${CONFIG.DOMAIN}`
 ];
 
 export default function SharePopup() {
   const { isShareOpen, closeShare } = useShare();
+  const { updateStat, hasIdentity } = useUser();
   const [badge, setBadge] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -69,10 +72,11 @@ export default function SharePopup() {
       try {
         await navigator.share({
           title: "Join the Snazzy Party Hunt!",
-          text: "Bro is at 98.2K and his birthday is coming. Where is the party? 😂",
-          url: "https://snazzyparty.vercel.app",
+          text: `Bro is at ${CONFIG.SUBSCRIBER_COUNT} and his birthday is coming. Where is the party? 😂`,
+          url: CONFIG.DOMAIN,
         });
         toast.success("🎉 Another hungry friend has joined!\n+10 Pressure on SnazzyZone 😂", { duration: 4000 });
+        if (hasIdentity) updateStat("friendsInvited", 1);
       } catch (err) {
         // user cancelled
       }
@@ -82,7 +86,7 @@ export default function SharePopup() {
   };
 
   const copyLink = () => {
-    navigator.clipboard.writeText("https://snazzyparty.vercel.app");
+    navigator.clipboard.writeText(CONFIG.DOMAIN);
     toast.success("Link copied! Share it everywhere.");
   };
 
@@ -152,7 +156,7 @@ export default function SharePopup() {
                     <div className="flex justify-between items-end border-b border-white/5 pb-2">
                       <div>
                         <p className="text-[10px] uppercase font-bold text-muted tracking-widest">Subscribers</p>
-                        <p className="text-base font-black text-white">98.2K 🚀</p>
+                        <p className="text-base font-black text-white">{CONFIG.SUBSCRIBER_COUNT} 🚀</p>
                       </div>
                       <div className="text-right">
                         <p className="text-[10px] uppercase font-bold text-muted tracking-widest">Birthday</p>
@@ -174,7 +178,7 @@ export default function SharePopup() {
                     <div className="flex flex-col items-end gap-2">
                       <p className="text-[8px] uppercase font-bold text-muted tracking-widest">Built with ❤️ by<br/>SNAZZY BOIS</p>
                       <div className="bg-white p-1 rounded-lg">
-                        <QRCodeSVG value="https://snazzyparty.vercel.app" size={48} level="L" />
+                        <QRCodeSVG value={CONFIG.DOMAIN} size={48} level="L" />
                       </div>
                     </div>
                   </div>
