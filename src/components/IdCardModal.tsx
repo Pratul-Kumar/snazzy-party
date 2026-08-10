@@ -233,13 +233,20 @@ export default function IdCardModal({ isOpen, onClose }: IdCardModalProps) {
               <form onSubmit={handleSubmit} className="space-y-4">
                 {(authTab === "signup" || authTab === "login") && (
                   <>
-                    <input
-                      type="text"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Email or Username..."
-                      className="w-full bg-black/50 border border-white/10 p-3 rounded-xl text-white placeholder:text-white/30 text-sm focus:outline-none"
-                    />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Email or Username..."
+                        className="w-full bg-black/50 border border-white/10 p-3 rounded-xl text-white placeholder:text-white/30 text-sm focus:outline-none"
+                      />
+                      {authTab === "signup" && (
+                        <p className="text-[9px] text-muted text-left mt-1 ml-1 tracking-wider uppercase">
+                          * Use email OR a custom username (e.g. RahulGamer#1)
+                        </p>
+                      )}
+                    </div>
                     <div className="relative">
                       <input
                         type="password"
