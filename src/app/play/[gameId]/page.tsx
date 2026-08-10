@@ -53,6 +53,13 @@ export default function GameRoom() {
   const [localStatsUpdated, setLocalStatsUpdated] = useState(false);
   const { updateStat, hasIdentity, awardXP, profile } = useUser();
 
+  // Pre-fill join name from profile if logged in
+  useEffect(() => {
+    if (hasIdentity && profile?.name) {
+      setJoinName(profile.name);
+    }
+  }, [hasIdentity, profile]);
+
   // Initialize my ID
   useEffect(() => {
     let storedId = localStorage.getItem(`snazzy_arena_id`);
@@ -317,8 +324,10 @@ export default function GameRoom() {
   if (!gameState) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#0a0a0a] text-center">
-        <h2 className="text-2xl font-black text-white mb-2 uppercase tracking-widest">Game Expired</h2>
-        <p className="text-muted mb-8">This party arena is closed.</p>
+        <div className="text-5xl mb-4">🚫</div>
+        <h2 className="text-2xl font-black text-white mb-2 uppercase tracking-widest">Game Not Found</h2>
+        <p className="text-muted mb-2">No game with code <span className="text-accent font-black">{gameId}</span> found.</p>
+        <p className="text-white/30 text-sm mb-8">The game may have expired, or the code might be wrong. Double-check with your friend!</p>
         <button onClick={() => router.push('/')} className="bg-white text-black px-8 py-3 rounded-xl font-bold uppercase">Back to Home</button>
       </div>
     );
