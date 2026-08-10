@@ -308,7 +308,7 @@ export default function GameRoom() {
   };
 
   const copyInvite = () => {
-    const msg = `Bro 😂\n\nStop scrolling.\nCome beat me at Tic-Tac-Toe.\nLoser gets reminded about Snazzy's missing party.\n\nJoin here 👇\n${CONFIG.DOMAIN}/play/${gameId}`;
+    const msg = `Bro 😂\n\nStop scrolling.\nCome beat me at Tic-Tac-Toe.\nLoser gets reminded about Snazzy's missing party.\n\nGame Code: ${gameId}\nJoin here 👇\n${CONFIG.DOMAIN}/play/${gameId}`;
     navigator.clipboard.writeText(msg);
     toast.success("Invite copied!");
   };

@@ -78,11 +78,11 @@ export default function ChallengeModal({ isOpen, onClose }: ChallengeModalProps)
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const gameUrl = mounted && typeof window !== "undefined" ? `${window.location.origin}/play/${gameId}` : "";
-  const inviteMessage = `Bro 😂\n\nStop scrolling.\nCome beat me at Tic-Tac-Toe.\nLoser gets reminded about Snazzy's missing party.\n\nJoin here 👇\n${gameUrl}`;
+  const inviteMessage = `Bro 😂\n\nStop scrolling.\nCome beat me at Tic-Tac-Toe.\nLoser gets reminded about Snazzy's missing party.\n\nGame Code: ${gameId}\nJoin here 👇\n${gameUrl}`;
 
   const copyLink = () => {
-    navigator.clipboard.writeText(gameUrl);
-    toast.success("Game link copied!");
+    navigator.clipboard.writeText(inviteMessage); // Use full invite message instead of just link
+    toast.success("Game invite copied!");
   };
 
   const shareNative = async () => {
@@ -91,7 +91,7 @@ export default function ChallengeModal({ isOpen, onClose }: ChallengeModalProps)
         await navigator.share({
           title: "Snazzy Party Arena",
           text: inviteMessage,
-          url: gameUrl,
+          // NO url field — WhatsApp & other apps append it to text causing duplicate
         });
       } catch (err) {
         // user cancelled
