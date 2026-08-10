@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { ref, set } from "firebase/database";
 import { rtdb } from "../lib/firebase";
 import { useUser } from "@/app/context/UserContext";
+import { useRouter } from "next/navigation";
 
 interface ChallengeModalProps {
   isOpen: boolean;
@@ -15,9 +16,20 @@ interface ChallengeModalProps {
 
 export default function ChallengeModal({ isOpen, onClose }: ChallengeModalProps) {
   const { profile, hasIdentity } = useUser();
+  const router = useRouter();
+  const [tab, setTab] = useState<"create" | "join">("create");
   const [name, setName] = useState("");
   const [side, setSide] = useState<"🍕" | "🍗" | null>(null);
   const [gameId, setGameId] = useState<string | null>(null);
+  const [joinCode, setJoinCode] = useState("");
+
+  // Reset join code when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setJoinCode("");
+      setTab("create");
+    }
+  }, [isOpen]);
 
   // Automatically sync profile info when it loads or when modal opens
   useEffect(() => {
@@ -26,6 +38,14 @@ export default function ChallengeModal({ isOpen, onClose }: ChallengeModalProps)
       setSide(profile.side as "🍕" | "🍗");
     }
   }, [hasIdentity, profile, isOpen]);
+
+  const handleJoin = (e: React.FormEvent) => {
+    e.preventDefault();
+    const code = joinCode.trim().toUpperCase();
+    if (!code) { toast.error("Enter a game code!"); return; }
+    onClose();
+    router.push(`/play/${code}`);
+  };
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,7 +134,53 @@ export default function ChallengeModal({ isOpen, onClose }: ChallengeModalProps)
             </div>
 
             <div className="p-6">
-              {!gameId ? (
+              {/* Tab Switcher */}
+              <div className="flex gap-2 mb-6">
+                <button
+                  type="button"
+                  onClick={() => setTab("create")}
+                  className={`flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-colors ${
+                    tab === "create" ? "bg-white text-black" : "bg-white/5 text-white/50 hover:bg-white/10"
+                  }`}
+                >
+                  🎮 Create Game
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTab("join")}
+                  className={`flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-colors ${
+                    tab === "join" ? "bg-white text-black" : "bg-white/5 text-white/50 hover:bg-white/10"
+                  }`}
+                >
+                  🔗 Join by Code
+                </button>
+              </div>
+
+              {tab === "join" ? (
+                <form onSubmit={handleJoin} className="space-y-4">
+                  <div className="text-center mb-2">
+                    <p className="text-white/60 text-sm">Got a game code from a friend? Enter it below.</p>
+                  </div>
+                  <input
+                    type="text"
+                    value={joinCode}
+                    onChange={(e) => setJoinCode(e.target.value.toUpperCase().slice(0, 8))}
+                    placeholder="e.g. 8PER5"
+                    className="w-full bg-black/50 border border-white/10 p-4 rounded-2xl text-white text-center text-2xl font-black uppercase tracking-[0.3em] placeholder:text-white/20 placeholder:text-base focus:outline-none focus:border-accent"
+                  />
+                  <p className="text-[9px] text-muted text-center uppercase tracking-widest">
+                    Ask your friend to share their game code
+                  </p>
+                  <button
+                    type="submit"
+                    disabled={!joinCode.trim()}
+                    className="w-full bg-accent text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-transform disabled:opacity-50 disabled:hover:scale-100"
+                  >
+                    Join Game 🚀
+                  </button>
+                </form>
+              ) : (
+              !gameId ? (
                 <form onSubmit={handleCreate} className="space-y-6">
                   {!hasIdentity && (
                     <>
@@ -189,6 +255,7 @@ export default function ChallengeModal({ isOpen, onClose }: ChallengeModalProps)
                     Enter Arena
                   </a>
                 </div>
+              )
               )}
             </div>
           </motion.div>
