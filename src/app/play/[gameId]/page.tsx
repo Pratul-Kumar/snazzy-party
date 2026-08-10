@@ -279,13 +279,14 @@ export default function GameRoom() {
 
   const shareResult = async () => {
     const myName = myId === gameState?.player1.id ? gameState?.player1.name : gameState?.player2?.name;
-    const msg = `🎮 I JUST WON THE SNAZZY PARTY BATTLE\n\n${myName} destroyed the opposition.\nScore: 1-0\nParty Pressure: +10\n\nYour turn to challenge me 😂\n${CONFIG.DOMAIN}/play/${gameId}`;
+    const gameUrl = `${CONFIG.DOMAIN}/play/${gameId}`;
+    const msg = `🎮 I JUST WON THE SNAZZY PARTY BATTLE\n\n${myName} destroyed the opposition.\nScore: 1-0\nParty Pressure: +10\n\nYour turn to challenge me 😂\n${gameUrl}`;
     
     if (navigator.share) {
       await navigator.share({
         title: "Snazzy Party Arena Winner",
         text: msg,
-        url: `${CONFIG.DOMAIN}/play/${gameId}`
+        // Note: url NOT included here — already in msg text to avoid duplication
       });
     } else {
       navigator.clipboard.writeText(msg);
