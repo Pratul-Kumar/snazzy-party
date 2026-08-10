@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePortal } from "./context/PortalContext";
+import { useUser } from "./context/UserContext";
 import EntryRoastPopup from "@/components/EntryRoastPopup";
 import MissingPoster from "@/components/MissingPoster";
 import LiveFeed from "@/components/LiveFeed";
@@ -23,8 +24,19 @@ import LevelUpAnimation from "@/components/LevelUpAnimation";
 
 export default function Home() {
   const { hasEntered } = usePortal();
+  const { hasIdentity } = useUser();
   const [isChallengeOpen, setIsChallengeOpen] = useState(false);
   const [isIdOpen, setIsIdOpen] = useState(false);
+
+  // Auto-prompt login/signup if they enter without an identity
+  useEffect(() => {
+    if (hasEntered && !hasIdentity) {
+      const timer = setTimeout(() => {
+        setIsIdOpen(true);
+      }, 1000); // Wait 1 second for portal entrance animation to finish
+      return () => clearTimeout(timer);
+    }
+  }, [hasEntered, hasIdentity]);
 
   return (
     <>

@@ -2,6 +2,17 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import toast from "react-hot-toast";
 import { syncUserProfile } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
+import { 
+  onAuthStateChanged, 
+  signInAnonymously,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  linkWithCredential,
+  EmailAuthProvider
+} from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export interface UserStats {
   gamesPlayed: number;
@@ -18,6 +29,7 @@ export interface UserStats {
 export interface UserProfile {
   name: string;
   odId: string;
+  uid: string; // Firebase UID
   side: "🍕" | "🍗";
   role: "USER" | "OWNER";
   xp: number;
@@ -38,11 +50,14 @@ interface UserContextProps {
   awardXP: (actionType: string, eventId?: string) => void;
   getHungryLevel: () => number;
   isOwner: boolean;
-  setLevelOverride: (level: number) => void; // for owner controls
+  isAnonymous: boolean;
+  setLevelOverride: (level: number) => void; 
+  signUpWithEmail: (email: string, pass: string, name: string, side: "🍕" | "🍗") => Promise<void>;
+  logInWithEmail: (email: string, pass: string) => Promise<void>;
+  logOut: () => Promise<void>;
 }
 
 const STORAGE_KEY = "snazzy_bois_profile_v2";
-const OWNER_ID = "SB_TI32W1VX";
 
 const DEFAULT_STATS: UserStats = {
   gamesPlayed: 0,
@@ -56,7 +71,6 @@ const DEFAULT_STATS: UserStats = {
   partyPressure: 0,
 };
 
-// Level Titles
 export const getLevelTitle = (level: number) => {
   if (level >= 50) return "👑 SUPREME HUNGRY BOI";
   if (level >= 20) return "🔥 PARTY LEGEND";
@@ -67,7 +81,6 @@ export const getLevelTitle = (level: number) => {
   return "🥲 NEW RECRUIT";
 };
 
-// XP Formula: XP(L) = XP(L-1) + 50 * L
 export function getXPForLevel(level: number): number {
   if (level <= 1) return 0;
   let totalXP = 0;
@@ -94,51 +107,142 @@ const UserContext = createContext<UserContextProps | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [firebaseUid, setFirebaseUid] = useState<string | null>(null);
+  const [isAnonymous, setIsAnonymous] = useState(true);
   
-  const isOwner = profile?.odId === OWNER_ID;
+  // Is this the owner?
+  const OWNER_UID = process.env.NEXT_PUBLIC_OWNER_UID || "no_owner_uid_configured";
+  const isOwner = profile?.uid === OWNER_UID || profile?.role === "OWNER";
 
-  // Load from localStorage on mount
+  // 1. Auth Listener
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setProfile({
-          ...parsed,
-          stats: { ...DEFAULT_STATS, ...(parsed.stats || {}) },
-          achievements: parsed.achievements || [],
-          completedEvents: parsed.completedEvents || [],
-        });
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setFirebaseUid(user.uid);
+        setIsAnonymous(user.isAnonymous);
+        
+        // Fetch from firestore if exists
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          const data = docSnap.data() as UserProfile;
+          const isActuallyOwner = (user.uid === OWNER_UID || user.email === "pratul21oklife@gmail.com");
+          setProfile({
+            ...data,
+            name: isActuallyOwner ? "Pratul" : data.name,
+            title: isActuallyOwner ? "👑 THE OG" : data.title,
+            stats: { ...DEFAULT_STATS, ...(data.stats || {}) },
+            achievements: data.achievements || [],
+            completedEvents: data.completedEvents || [],
+            role: isActuallyOwner ? "OWNER" : (data.role || "USER"),
+          });
+        } else if (user.uid === OWNER_UID || user.email === "pratul21oklife@gmail.com") {
+          // If the owner just logged in for the very first time and has no profile in Firestore, auto-create it!
+          const ownerProfile: UserProfile = {
+            name: "Pratul",
+            odId: "SB_TI32W1VX",
+            uid: user.uid,
+            side: "🍕",
+            role: "OWNER",
+            xp: 0,
+            level: 100,
+            title: "👑 THE OG",
+            stats: { ...DEFAULT_STATS },
+            achievements: [],
+            completedEvents: [],
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+          };
+          setProfile(ownerProfile);
+        }
+      } else {
+        setFirebaseUid(null);
+        // If not logged in, auto sign-in anonymously
+        try {
+          await signInAnonymously(auth);
+        } catch (error) {
+          console.error("Anonymous auth failed", error);
+        }
       }
-    } catch {
-      // Corrupted data, ignore
-    }
-  }, []);
+    });
 
-  // Save to localStorage & Firebase whenever profile changes
+    return () => unsubscribe();
+  }, [OWNER_UID]);
+
+  // Sync to Firestore & LocalStorage
   useEffect(() => {
-    if (profile) {
+    if (profile && firebaseUid) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-      syncUserProfile(profile).catch(console.error);
+      // Sync using the UID as the document ID
+      const docRef = doc(db, "users", firebaseUid);
+      setDoc(docRef, profile, { merge: true }).catch(console.error);
     }
-  }, [profile]);
+  }, [profile, firebaseUid]);
+
+  const signUpWithEmail = async (email: string, pass: string, name: string, side: "🍕" | "🍗") => {
+    if (auth.currentUser && auth.currentUser.isAnonymous) {
+      try {
+        const credential = EmailAuthProvider.credential(email, pass);
+        await linkWithCredential(auth.currentUser, credential);
+        createIdentity(name, side); // Initialize the profile data
+      } catch (err: any) {
+        throw new Error(err.message || "Failed to upgrade anonymous account");
+      }
+    } else {
+      const cred = await createUserWithEmailAndPassword(auth, email, pass);
+      // createIdentity logic will run but we need to wait for auth state change or do it here
+      // But it's easier to just call createIdentity directly.
+      // Wait, createIdentity uses firebaseUid which might not be updated yet.
+      // Let's manually create it.
+      const odId = "SB_" + Math.random().toString(36).substr(2, 8).toUpperCase();
+      const newProfile: UserProfile = {
+        name,
+        odId,
+        uid: cred.user.uid,
+        side,
+        role: "USER",
+        xp: 10,
+        level: 1,
+        title: getLevelTitle(1),
+        stats: { ...DEFAULT_STATS },
+        achievements: ["🍕 FIRST BITE"],
+        completedEvents: [],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      setProfile(newProfile);
+    }
+  };
+
+  const logInWithEmail = async (email: string, pass: string) => {
+    await signInWithEmailAndPassword(auth, email, pass);
+    // auth listener will handle the rest
+  };
+
+  const logOut = async () => {
+    await signOut(auth);
+    setProfile(null);
+    setFirebaseUid(null);
+    // auth listener will automatically sign in anonymously
+  };
 
   const createIdentity = useCallback((name: string, side: "🍕" | "🍗") => {
-    // Generate new ID unless they type exactly "OWNER_SECRET_LOGIN_Pratul"
-    const odId = name === "OWNER_SECRET_LOGIN_Pratul" 
-      ? OWNER_ID 
-      : "SB_" + Math.random().toString(36).substr(2, 8).toUpperCase();
-    
-    const role = odId === OWNER_ID ? "OWNER" : "USER";
+    if (!firebaseUid) return;
 
+    // We do not check for Pratul string anymore for owner. Auth decides.
+    const isOwnerNow = firebaseUid === OWNER_UID;
+    const odId = isOwnerNow ? "SB_TI32W1VX" : "SB_" + Math.random().toString(36).substr(2, 8).toUpperCase();
+    
     const newProfile: UserProfile = {
-      name: odId === OWNER_ID ? "PRATUL" : name,
+      name,
       odId,
+      uid: firebaseUid,
       side,
-      role,
+      role: isOwnerNow ? "OWNER" : "USER",
       xp: 0,
       level: 1,
-      title: odId === OWNER_ID ? "🍕 PARTY COMMANDER" : "🥲 NEW RECRUIT",
+      title: isOwnerNow ? "👑 THE OG" : "🥲 NEW RECRUIT",
       stats: { ...DEFAULT_STATS },
       achievements: [],
       completedEvents: [],
@@ -148,9 +252,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     
     setProfile(newProfile);
     
-    // Defer awardXP to next tick so profile is set
     setTimeout(() => {
-      if (role !== "OWNER") {
+      if (!isOwnerNow) {
         setProfile(prev => {
           if (!prev) return prev;
           const updated = { ...prev, xp: 10, achievements: ["🍕 FIRST BITE"] };
@@ -160,13 +263,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         });
       }
     }, 100);
-  }, []);
+  }, [firebaseUid, OWNER_UID]);
 
   const awardXP = useCallback((actionType: string, eventId?: string) => {
     setProfile((prev) => {
       if (!prev || prev.role === "OWNER") return prev;
 
-      // Anti-farming check
       if (eventId && prev.completedEvents.includes(eventId)) {
         return prev;
       }
@@ -215,7 +317,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       }
 
       if (newLevel > prev.level) {
-        // Trigger global animation via event
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('levelUp', { detail: { level: newLevel, title: newTitle } }));
         }
@@ -275,7 +376,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         awardXP,
         getHungryLevel,
         isOwner,
+        isAnonymous,
         setLevelOverride,
+        signUpWithEmail,
+        logInWithEmail,
+        logOut,
       }}
     >
       {children}

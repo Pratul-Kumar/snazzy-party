@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Copy, Share2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { ref, set } from "firebase/database";
 import { rtdb } from "../lib/firebase";
+import { useUser } from "@/app/context/UserContext";
 
 interface ChallengeModalProps {
   isOpen: boolean;
@@ -13,9 +14,18 @@ interface ChallengeModalProps {
 }
 
 export default function ChallengeModal({ isOpen, onClose }: ChallengeModalProps) {
+  const { profile, hasIdentity } = useUser();
   const [name, setName] = useState("");
   const [side, setSide] = useState<"🍕" | "🍗" | null>(null);
   const [gameId, setGameId] = useState<string | null>(null);
+
+  // Automatically sync profile info when it loads or when modal opens
+  useEffect(() => {
+    if (hasIdentity && profile) {
+      setName(profile.name);
+      setSide(profile.side as "🍕" | "🍗");
+    }
+  }, [hasIdentity, profile, isOpen]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +55,9 @@ export default function ChallengeModal({ isOpen, onClose }: ChallengeModalProps)
     }
   };
 
-  const gameUrl = typeof window !== "undefined" ? `${window.location.origin}/play/${gameId}` : "";
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const gameUrl = mounted && typeof window !== "undefined" ? `${window.location.origin}/play/${gameId}` : "";
   const inviteMessage = `Bro 😂\n\nStop scrolling.\nCome beat me at Tic-Tac-Toe.\nLoser gets reminded about Snazzy's missing party.\n\nJoin here 👇\n${gameUrl}`;
 
   const copyLink = () => {
@@ -104,49 +116,53 @@ export default function ChallengeModal({ isOpen, onClose }: ChallengeModalProps)
             <div className="p-6">
               {!gameId ? (
                 <form onSubmit={handleCreate} className="space-y-6">
-                  <div>
-                    <label className="text-xs font-bold text-white uppercase tracking-wider block mb-2">
-                      Your Name
-                    </label>
-                    <input 
-                      type="text" 
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      required 
-                      placeholder="Player 1" 
-                      className="input-premium font-bold" 
-                      maxLength={15}
-                    />
-                  </div>
+                  {!hasIdentity && (
+                    <>
+                      <div>
+                        <label className="text-xs font-bold text-white uppercase tracking-wider block mb-2">
+                          Your Name
+                        </label>
+                        <input 
+                          type="text" 
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          required 
+                          placeholder="Player 1" 
+                          className="input-premium font-bold" 
+                          maxLength={15}
+                        />
+                      </div>
 
-                  <div>
-                    <label className="text-xs font-bold text-white uppercase tracking-wider block mb-2">
-                      Choose Your Side
-                    </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        type="button"
-                        onClick={() => setSide("🍕")}
-                        className={`surface-interactive p-4 rounded-xl text-4xl flex items-center justify-center transition-all ${side === "🍕" ? "bg-accent/20 border-accent scale-105" : "grayscale"}`}
-                      >
-                        🍕
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setSide("🍗")}
-                        className={`surface-interactive p-4 rounded-xl text-4xl flex items-center justify-center transition-all ${side === "🍗" ? "bg-accent/20 border-accent scale-105" : "grayscale"}`}
-                      >
-                        🍗
-                      </button>
-                    </div>
-                  </div>
+                      <div>
+                        <label className="text-xs font-bold text-white uppercase tracking-wider block mb-2">
+                          Choose Your Side
+                        </label>
+                        <div className="grid grid-cols-2 gap-3">
+                          <button
+                            type="button"
+                            onClick={() => setSide("🍕")}
+                            className={`surface-interactive p-4 rounded-xl text-4xl flex items-center justify-center transition-all ${side === "🍕" ? "bg-accent/20 border-accent scale-105" : "grayscale"}`}
+                          >
+                            🍕
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSide("🍗")}
+                            className={`surface-interactive p-4 rounded-xl text-4xl flex items-center justify-center transition-all ${side === "🍗" ? "bg-accent/20 border-accent scale-105" : "grayscale"}`}
+                          >
+                            🍗
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
 
                   <button 
                     type="submit" 
                     disabled={!name || !side}
                     className="bg-white text-black w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm hover:scale-[1.02] active:scale-[0.98] transition-transform disabled:opacity-50"
                   >
-                    Create Game
+                    {hasIdentity ? "Create Game" : "Set Name & Create"}
                   </button>
                 </form>
               ) : (

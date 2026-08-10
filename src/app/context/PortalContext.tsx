@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface PortalContextProps {
   hasEntered: boolean;
@@ -10,15 +10,16 @@ interface PortalContextProps {
 const PortalContext = createContext<PortalContextProps | undefined>(undefined);
 
 export const PortalProvider = ({ children }: { children: ReactNode }) => {
-  const [hasEntered, setHasEntered] = useState(() => {
+  const [hasEntered, setHasEntered] = useState(false);
+  
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       const lastTime = localStorage.getItem('lastEntryPopupTime');
       if (lastTime && Date.now() - parseInt(lastTime, 10) < 10 * 60 * 1000) {
-        return true;
+        setHasEntered(true);
       }
     }
-    return false;
-  });
+  }, []);
 
   const enterPortal = () => {
     setHasEntered(true);
