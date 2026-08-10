@@ -280,24 +280,22 @@ export default function GameRoom() {
   const shareResult = async () => {
     const myName = myId === gameState?.player1.id ? gameState?.player1.name : gameState?.player2?.name;
     const gameUrl = `${CONFIG.DOMAIN}/play/${gameId}`;
-    // Text WITHOUT URL — apps like WhatsApp auto-attach the link preview from `url` field
-    const shareText = `🎮 I JUST WON THE SNAZZY PARTY BATTLE\n\n${myName} destroyed the opposition.\nScore: 1-0\nParty Pressure: +10\n\nYour turn to challenge me 😂`;
+    // Single message with URL included once — no separate url field to avoid WhatsApp doubling it
+    const msg = `🎮 I JUST WON THE SNAZZY PARTY BATTLE\n\n${myName} destroyed the opposition.\nScore: 1-0\nParty Pressure: +10\n\nYour turn to challenge me 😂\n${gameUrl}`;
     
     if (navigator.share) {
       try {
         await navigator.share({
           title: "Snazzy Party Arena Winner",
-          text: shareText,
-          url: gameUrl, // URL separate so apps show it as a link preview (not in text)
+          text: msg,
+          // NO url field — WhatsApp & other apps append it to text causing duplicate
         });
       } catch (err) {
-        // User cancelled share or share failed — fallback to clipboard
-        navigator.clipboard.writeText(`${shareText}\n${gameUrl}`);
+        navigator.clipboard.writeText(msg);
         toast.success("Copied to clipboard!");
       }
     } else {
-      // Desktop fallback — include URL in text
-      navigator.clipboard.writeText(`${shareText}\n${gameUrl}`);
+      navigator.clipboard.writeText(msg);
       toast.success("Result copied!");
     }
   };
