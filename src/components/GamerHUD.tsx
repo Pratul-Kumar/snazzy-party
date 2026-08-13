@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import LiveSubscriberCount from "@/components/LiveSubscriberCount";
 
 interface GamerHUDProps {
   playerName?: string;
@@ -37,6 +38,7 @@ export default function GamerHUD({ playerName = "VISITOR", onOpenMenu }: GamerHU
           <span className="font-gamer-mono text-[7px] md:text-[8px] tracking-[0.2em] text-[var(--muted)] block mt-0.5">
             PLAYER WORLD · 01
           </span>
+          <LiveSubscriberCount variant="hud" className="mt-1" />
         </div>
       </a>
 

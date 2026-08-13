@@ -2,20 +2,23 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-
-const levels = [
-  { id: "01", title: "START", subtitle: "30 DEC 2021", desc: "Channel started.", status: "verified" as const },
-  { id: "02", title: "THE JOURNEY", subtitle: "?", desc: "Still creating.", status: "unknown" as const },
-  { id: "03", title: "THE GAMES", subtitle: "LIBRARY", desc: "Farming Simulator • Cities: Skylines II • Manor Lords • Raft", status: "active" as const },
-  { id: "04", title: "THE CHANNELS", subtitle: "NETWORK", desc: "Snazzy Zone • Snazzy Playz • Snazzy Flux", status: "active" as const },
-  { id: "05", title: "2026 BUILD", subtitle: "MAIN QUEST", desc: "Current chapter.", status: "active" as const },
-  { id: "06", title: "NEXT", subtitle: "?", desc: "The story continues.", status: "upcoming" as const },
-];
+import { useSubscriber } from "@/app/context/SubscriberContext";
 
 export default function CareerMode() {
+  const { is100K } = useSubscriber();
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const lineWidth = useTransform(scrollYProgress, [0.1, 0.6], ["0%", "100%"]);
+
+  const levels = [
+    { id: "01", title: "START", subtitle: "30 DEC 2021", desc: "Channel started.", status: "verified" as const },
+    { id: "02", title: "THE JOURNEY", subtitle: "?", desc: "Still creating.", status: "unknown" as const },
+    { id: "03", title: "THE GAMES", subtitle: "LIBRARY", desc: "Farming Simulator • Cities: Skylines II • Manor Lords • Raft", status: "active" as const },
+    { id: "04", title: "THE CHANNELS", subtitle: "NETWORK", desc: "Snazzy Zone • Snazzy Playz • Snazzy Flux", status: "active" as const },
+    { id: "05", title: "2026 BUILD", subtitle: "MAIN QUEST", desc: "Current chapter.", status: "active" as const },
+    { id: "06", title: "100K", subtitle: "MILESTONE", desc: is100K ? "Achieved." : "The road to 100K.", status: is100K ? "verified" as const : "active" as const },
+    { id: "07", title: "NEXT", subtitle: "?", desc: "The story continues.", status: "upcoming" as const },
+  ];
 
   return (
     <section ref={ref} className="relative min-h-screen w-full overflow-hidden py-24 md:py-32 px-6">

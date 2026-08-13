@@ -2,8 +2,11 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { useSubscriber } from "@/app/context/SubscriberContext";
+import LiveSubscriberCount from "@/components/LiveSubscriberCount";
 
 export default function QuestLog() {
+  const { is100K } = useSubscriber();
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const roadScale = useTransform(scrollYProgress, [0.2, 0.7], [0.95, 1.05]);
@@ -142,17 +145,24 @@ export default function QuestLog() {
               {[
                 { title: "KEEP CREATING", status: "ACTIVE" },
                 { title: "GROW THE CHANNELS", status: "ACTIVE" },
-                { title: "REACH THE NEXT MILESTONE", status: "ACTIVE" },
+                { title: "REACH 100K", status: is100K ? "ACHIEVED" : "ACTIVE" },
               ].map((quest, i) => (
-                <div key={i} className="flex items-center gap-4 group">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent-secondary)]" />
-                  <span className="font-gamer-heading text-sm md:text-base tracking-wider text-[var(--text)] group-hover:text-[var(--accent)] transition-colors">
-                    {quest.title}
-                  </span>
-                  <div className="flex-1 h-[1px] bg-[var(--muted)]/10" />
-                  <span className="font-gamer-mono text-[8px] tracking-[0.2em] text-[var(--accent-secondary)]">
-                    {quest.status}
-                  </span>
+                <div key={i}>
+                  <div className="flex items-center gap-4 group">
+                    <div className={`w-1.5 h-1.5 rounded-full ${quest.status === 'ACHIEVED' ? 'bg-[var(--accent-secondary)]' : 'bg-[var(--accent-secondary)]'}`} />
+                    <span className="font-gamer-heading text-sm md:text-base tracking-wider text-[var(--text)] group-hover:text-[var(--accent)] transition-colors">
+                      {quest.title}
+                    </span>
+                    <div className="flex-1 h-[1px] bg-[var(--muted)]/10" />
+                    <span className={`font-gamer-mono text-[8px] tracking-[0.2em] ${quest.status === 'ACHIEVED' ? 'text-[var(--accent-secondary)]' : 'text-[var(--accent-secondary)]'}`}>
+                      {quest.status === 'ACHIEVED' ? '✓ ACHIEVED' : '◉ ACTIVE'}
+                    </span>
+                  </div>
+                  {quest.title === "REACH 100K" && (
+                    <div className="mt-2 ml-5">
+                      <LiveSubscriberCount variant="quest" />
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

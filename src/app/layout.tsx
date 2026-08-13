@@ -40,6 +40,7 @@ export const viewport = {
 import { PortalProvider } from "./context/PortalContext";
 import { ShareProvider } from "./context/ShareContext";
 import { UserProvider } from "./context/UserContext";
+import { SubscriberProvider } from "./context/SubscriberContext";
 import { Toaster } from "react-hot-toast";
 import SharePopup from "@/components/SharePopup";
 
@@ -54,6 +55,7 @@ export default function RootLayout({
         <ShareProvider>
           <PortalProvider>
             <UserProvider>
+              <SubscriberProvider>
               {children}
               <Toaster 
                 position="top-center"
@@ -70,6 +72,7 @@ export default function RootLayout({
                 }}
               />
               <SharePopup />
+              </SubscriberProvider>
             </UserProvider>
           </PortalProvider>
         </ShareProvider>

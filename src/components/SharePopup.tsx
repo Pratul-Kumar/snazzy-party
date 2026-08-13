@@ -9,6 +9,7 @@ import { Download, Share2, Copy, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { CONFIG } from "../lib/config";
 import { useUser } from "../app/context/UserContext";
+import { useSubscriber } from "@/app/context/SubscriberContext";
 
 const BADGES = [
   "🍕 Pizza Inspector",
@@ -22,19 +23,20 @@ const BADGES = [
   "👑 Supreme Hungry Legend"
 ];
 
-const WA_MESSAGES = [
-  `😂 BREAKING NEWS\n${CONFIG.SUBSCRIBER_COUNT} ✔\nBirthday Coming ✔\nParty ❌\nJoin the hunt 😂\n${CONFIG.DOMAIN}`,
-  `🚨 MISSING\nItem: 🍕 Party\nReward: Unlimited Respect\nHelp us find it 👇\n${CONFIG.DOMAIN}`,
-  `Mission Update 🎮\nMain Quest: Find The Missing Party\nDifficulty: IMPOSSIBLE 😂\nNeed Backup 👇\n${CONFIG.DOMAIN}`,
-  `Bro...\nWe signed the petition.\nNow it's your turn 😂\n${CONFIG.DOMAIN}`
-];
-
 export default function SharePopup() {
   const { isShareOpen, closeShare } = useShare();
   const { updateStat, hasIdentity } = useUser();
+  const { displayCount } = useSubscriber();
   const [badge, setBadge] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  const WA_MESSAGES = [
+    `😂 BREAKING NEWS\n${displayCount} ✔\nBirthday Coming ✔\nParty ❌\nJoin the hunt 😂\n${CONFIG.DOMAIN}`,
+    `🚨 MISSING\nItem: 🍕 Party\nReward: Unlimited Respect\nHelp us find it 👇\n${CONFIG.DOMAIN}`,
+    `Mission Update 🎮\nMain Quest: Find The Missing Party\nDifficulty: IMPOSSIBLE 😂\nNeed Backup 👇\n${CONFIG.DOMAIN}`,
+    `Bro...\nWe signed the petition.\nNow it's your turn 😂\n${CONFIG.DOMAIN}`
+  ];
 
   useEffect(() => {
     if (isShareOpen) {
@@ -72,7 +74,7 @@ export default function SharePopup() {
       try {
         await navigator.share({
           title: "Join the Snazzy Party Hunt!",
-          text: `Bro is at ${CONFIG.SUBSCRIBER_COUNT} and his birthday is coming. Where is the party? 😂`,
+          text: `Bro is at ${displayCount} and his birthday is coming. Where is the party? 😂`,
           url: CONFIG.DOMAIN,
         });
         toast.success("🎉 Another hungry friend has joined!\n+10 Pressure on SnazzyZone 😂", { duration: 4000 });
@@ -156,7 +158,7 @@ export default function SharePopup() {
                     <div className="flex justify-between items-end border-b border-white/5 pb-2">
                       <div>
                         <p className="text-[10px] uppercase font-bold text-muted tracking-widest">Subscribers</p>
-                        <p className="text-base font-black text-white">{CONFIG.SUBSCRIBER_COUNT} 🚀</p>
+                        <p className="text-base font-black text-white">{displayCount} 🚀</p>
                       </div>
                       <div className="text-right">
                         <p className="text-[10px] uppercase font-bold text-muted tracking-widest">Birthday</p>
