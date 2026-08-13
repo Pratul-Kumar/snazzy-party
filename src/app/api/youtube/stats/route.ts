@@ -25,6 +25,8 @@ function formatCount(count: number): string {
   return count.toString();
 }
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const apiKey = process.env.YOUTUBE_API_KEY;
 
