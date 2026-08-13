@@ -40,8 +40,11 @@ export const viewport = {
 import { PortalProvider } from "./context/PortalContext";
 import { ShareProvider } from "./context/ShareContext";
 import { UserProvider } from "./context/UserContext";
+import { CelebrationProvider } from "./context/CelebrationContext";
 import { Toaster } from "react-hot-toast";
 import SharePopup from "@/components/SharePopup";
+import CelebrationBanner from "@/components/CelebrationBanner";
+import CelebrationModal from "@/components/CelebrationModal";
 
 export default function RootLayout({
   children,
@@ -54,22 +57,26 @@ export default function RootLayout({
         <ShareProvider>
           <PortalProvider>
             <UserProvider>
-              {children}
-              <Toaster 
-                position="top-center"
-                toastOptions={{
-                  style: {
-                    background: '#101210',
-                    color: '#F5F5F5',
-                    border: '1px solid #8A8F89',
-                    borderRadius: '0px',
-                    fontFamily: 'var(--font-rajdhani)',
-                    fontWeight: 'bold',
-                    textTransform: 'uppercase'
-                  }
-                }}
-              />
-              <SharePopup />
+              <CelebrationProvider>
+                <CelebrationBanner />
+                {children}
+                <CelebrationModal />
+                <Toaster 
+                  position="top-center"
+                  toastOptions={{
+                    style: {
+                      background: '#101210',
+                      color: '#F5F5F5',
+                      border: '1px solid #8A8F89',
+                      borderRadius: '0px',
+                      fontFamily: 'var(--font-rajdhani)',
+                      fontWeight: 'bold',
+                      textTransform: 'uppercase'
+                    }
+                  }}
+                />
+                <SharePopup />
+              </CelebrationProvider>
             </UserProvider>
           </PortalProvider>
         </ShareProvider>

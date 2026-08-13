@@ -2,11 +2,11 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { useSubscriber } from "@/app/context/SubscriberContext";
-import LiveSubscriberCount from "@/components/LiveSubscriberCount";
+import { useCelebration } from "@/app/context/CelebrationContext";
 
 export default function QuestLog() {
-  const { is100K } = useSubscriber();
+  const { celebration } = useCelebration();
+  const is100K = celebration?.enabled;
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const roadScale = useTransform(scrollYProgress, [0.2, 0.7], [0.95, 1.05]);
@@ -158,11 +158,7 @@ export default function QuestLog() {
                       {quest.status === 'ACHIEVED' ? '✓ ACHIEVED' : '◉ ACTIVE'}
                     </span>
                   </div>
-                  {quest.title === "REACH 100K" && (
-                    <div className="mt-2 ml-5">
-                      <LiveSubscriberCount variant="quest" />
-                    </div>
-                  )}
+
                 </div>
               ))}
             </div>

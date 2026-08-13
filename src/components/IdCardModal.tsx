@@ -8,7 +8,6 @@ import html2canvas from "html2canvas";
 import { useUser, getXPForLevel } from "@/app/context/UserContext";
 import { CONFIG } from "@/lib/config";
 import toast from "react-hot-toast";
-import { useSubscriber } from "@/app/context/SubscriberContext";
 
 interface IdCardModalProps {
   isOpen: boolean;
@@ -28,7 +27,6 @@ export default function IdCardModal({ isOpen, onClose }: IdCardModalProps) {
     isOwner, setLevelOverride, isAnonymous, 
     signUpWithEmail, logInWithEmail, logOut 
   } = useUser();
-  const { displayCount } = useSubscriber();
   const [name, setName] = useState("");
   const [side, setSide] = useState<"🍕" | "🍗" | "">("");
   const cardRef = useRef<HTMLDivElement>(null);
@@ -423,7 +421,7 @@ export default function IdCardModal({ isOpen, onClose }: IdCardModalProps) {
                   <div>
                     <div className="text-xs font-black uppercase tracking-[0.2em] text-white">SNAZZY BOIS</div>
                     <div className="text-[10px] font-bold text-accent uppercase tracking-widest">
-                      {displayCount} PARTY HUNT
+                      100K PARTY HUNT
                     </div>
                   </div>
                   <div className="bg-white p-2 rounded-xl">

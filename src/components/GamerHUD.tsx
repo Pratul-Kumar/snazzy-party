@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useCelebration } from "@/app/context/CelebrationContext";
 
 interface GamerHUDProps {
   playerName?: string;
@@ -8,6 +9,7 @@ interface GamerHUDProps {
 }
 
 export default function GamerHUD({ playerName = "VISITOR", onOpenMenu }: GamerHUDProps) {
+  const { celebration, hasSeen, replay } = useCelebration();
   return (
     <div className="fixed inset-0 z-40 pointer-events-none p-4 md:p-6 no-select">
       
@@ -40,17 +42,33 @@ export default function GamerHUD({ playerName = "VISITOR", onOpenMenu }: GamerHU
         </div>
       </a>
 
-      {/* ═══ TOP RIGHT — Player Info ═══ */}
-      <div className="absolute top-4 right-4 md:top-6 md:right-6 text-right">
-        <span className="font-gamer-mono text-[7px] md:text-[8px] tracking-[0.25em] text-[var(--muted)] block">
-          PLAYER
-        </span>
-        <span className="font-gamer-heading text-xs md:text-sm tracking-wider text-[var(--text)] block leading-tight">
-          {playerName}
-        </span>
-        <span className="font-gamer-mono text-[7px] md:text-[8px] tracking-[0.2em] text-[var(--accent)] block mt-0.5">
-          LVL 01
-        </span>
+      {/* ═══ TOP RIGHT — Player Info & Replay ═══ */}
+      <div className="absolute top-4 right-4 md:top-6 md:right-6 text-right flex flex-col items-end">
+        <div>
+          <span className="font-gamer-mono text-[7px] md:text-[8px] tracking-[0.25em] text-[var(--muted)] block">
+            PLAYER
+          </span>
+          <span className="font-gamer-heading text-xs md:text-sm tracking-wider text-[var(--text)] block leading-tight">
+            {playerName}
+          </span>
+          <span className="font-gamer-mono text-[7px] md:text-[8px] tracking-[0.2em] text-[var(--accent)] block mt-0.5">
+            LVL 01
+          </span>
+        </div>
+        
+        {celebration?.enabled && hasSeen && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={replay}
+            className="mt-4 pointer-events-auto flex items-center gap-2 bg-[var(--accent)]/10 hover:bg-[var(--accent)]/20 border border-[var(--accent)]/30 text-[var(--accent)] px-3 py-1.5 rounded-lg transition-colors"
+          >
+            <span className="text-sm">🏆</span>
+            <span className="font-gamer-mono text-[8px] tracking-[0.2em] font-bold">100K</span>
+          </motion.button>
+        )}
       </div>
 
       {/* ═══ BOTTOM LEFT — Mission Status ═══ */}
