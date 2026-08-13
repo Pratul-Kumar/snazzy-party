@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import LiveSubscriberCount from "@/components/LiveSubscriberCount";
 
 export default function PlayerProfile() {
   const [imageError, setImageError] = useState(false);
@@ -154,7 +153,6 @@ export default function PlayerProfile() {
               <StatItem label="CREATING SINCE" value="30 DEC 2021" />
               <StatItem label="CHANNELS" value="03" />
               <StatItem label="CURRENT ERA" value="2026" />
-              <LiveSubscriberCount variant="profile" />
               <motion.div 
                 className="flex flex-col space-y-1"
                 variants={{

@@ -23,7 +23,6 @@ import SnazzyArenaSection from "@/components/SnazzyArenaSection";
 import ChallengeModal from "@/components/ChallengeModal";
 import IdCardModal from "@/components/IdCardModal";
 import LevelUpAnimation from "@/components/LevelUpAnimation";
-import Celebration100K from "@/components/Celebration100K";
 
 export default function Home() {
   const { hasIdentity } = useUser();
@@ -126,7 +125,6 @@ export default function Home() {
         </main>
       )}
 
-      <Celebration100K />
       <ChallengeModal isOpen={isChallengeOpen} onClose={() => setIsChallengeOpen(false)} />
       <IdCardModal isOpen={isIdOpen} onClose={() => setIsIdOpen(false)} />
     </>
