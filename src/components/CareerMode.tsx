@@ -6,7 +6,7 @@ import { useCelebration } from "@/app/context/CelebrationContext";
 
 export default function CareerMode() {
   const { celebration } = useCelebration();
-  const is100K = celebration?.enabled;
+  const is100K = celebration?.enabled === true;
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const lineWidth = useTransform(scrollYProgress, [0.1, 0.6], ["0%", "100%"]);

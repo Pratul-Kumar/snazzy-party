@@ -6,7 +6,7 @@ import { useCelebration } from "@/app/context/CelebrationContext";
 
 export default function QuestLog() {
   const { celebration } = useCelebration();
-  const is100K = celebration?.enabled;
+  const is100K = celebration?.enabled === true;
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const roadScale = useTransform(scrollYProgress, [0.2, 0.7], [0.95, 1.05]);

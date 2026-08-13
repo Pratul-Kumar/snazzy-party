@@ -16,7 +16,7 @@ export default function CelebrationModal() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const isActive = (celebration?.enabled && !hasSeen) || isTestMode;
+  const isActive = (celebration?.enabled === true && !hasSeen) || isTestMode;
 
   useEffect(() => {
     const saved = localStorage.getItem("snazzyzone_celebration_sound");
