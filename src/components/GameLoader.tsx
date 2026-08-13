@@ -34,12 +34,12 @@ export function GameLoader({ onComplete }: GameLoaderProps) {
       setPhase(0);
       
       const timings = [
-        2000, // Phase 0 -> 1: Init -> Logo
-        2500, // Phase 1 -> 2: Logo -> Date
-        4000, // Phase 2 -> 3: Date -> Journey
-        4000, // Phase 3 -> 4: Journey -> Status
-        3500, // Phase 4 -> 5: Status -> Quest
-        3500, // Phase 5 -> 6: Quest -> Loading Bars
+        1000, // Phase 0 -> 1: Init -> Logo
+        1500, // Phase 1 -> 2: Logo -> Date
+        2000, // Phase 2 -> 3: Date -> Journey
+        2000, // Phase 3 -> 4: Journey -> Status
+        2000, // Phase 4 -> 5: Status -> Quest
+        2000, // Phase 5 -> 6: Quest -> Loading Bars
       ];
 
       let currentPhase = 0;
@@ -58,7 +58,7 @@ export function GameLoader({ onComplete }: GameLoaderProps) {
           // Reached phase 6, wait a bit then complete
           setTimeout(() => {
             handleComplete();
-          }, 2500);
+          }, 1500);
         }
       };
       
