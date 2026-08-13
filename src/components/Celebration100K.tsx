@@ -202,26 +202,16 @@ export default function Celebration100K() {
                   transition={{ delay: 0.3 }}
                   className="relative z-10 mt-10 space-y-3"
                 >
-                  <p className="font-gamer-mono text-[9px] tracking-[0.2em] text-[var(--muted)]">
-                    FROM 30 DEC 2021
-                  </p>
-                  <p className="font-gamer-mono text-[9px] tracking-[0.2em] text-[var(--accent)]">
-                    TO 100K.
-                  </p>
-                  <div className="w-8 h-[1px] bg-[var(--muted)]/20 mx-auto my-4" />
                   <p className="font-gamer-body text-sm text-[var(--muted)] tracking-wider">
-                    STILL PLAYING.
+                    &quot;THE MILESTONE IS REAL.&quot;
                   </p>
-                  <p className="font-gamer-body text-sm text-[var(--muted)] tracking-wider">
-                    STILL CREATING.
-                  </p>
-                  <p className="font-gamer-body text-sm text-[var(--text)] tracking-wider">
-                    STILL HERE.
+                  <p className="font-gamer-body text-sm text-[var(--accent)] tracking-wider">
+                    &quot;NOW... WHERE'S THE PARTY? 🍕&quot;
                   </p>
                 </motion.div>
               )}
 
-              {/* Phase 5: Party roast + CTAs */}
+              {/* Phase 5: Action buttons */}
               {phase >= 5 && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -229,23 +219,6 @@ export default function Celebration100K() {
                   transition={{ delay: 0.3 }}
                   className="relative z-10 mt-12 w-full max-w-xs"
                 >
-                  {/* Party roast */}
-                  <div className="border border-[var(--muted)]/10 p-4 mb-8">
-                    <span className="font-gamer-mono text-[8px] tracking-[0.3em] text-[var(--muted)] block mb-2">
-                      PARTY STATUS
-                    </span>
-                    <span className="font-gamer-heading text-lg tracking-wider text-[var(--accent)] block mb-2">
-                      🚨 STILL PENDING
-                    </span>
-                    <p className="font-gamer-mono text-[8px] tracking-[0.15em] text-[var(--muted)]">
-                      100K ACHIEVED. PARTY? UNKNOWN.
-                    </p>
-                    <p className="font-gamer-body text-[10px] text-[var(--muted)]/60 mt-2 italic">
-                      &quot;Bro has officially run out of excuses.&quot;
-                    </p>
-                  </div>
-
-                  {/* Sound toggle */}
                   <button
                     onClick={() => setSoundEnabled(!soundEnabled)}
                     className="font-gamer-mono text-[8px] tracking-[0.2em] text-[var(--muted)] mb-6 block mx-auto hover:text-[var(--text)] transition-colors"
