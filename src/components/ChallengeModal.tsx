@@ -182,53 +182,49 @@ export default function ChallengeModal({ isOpen, onClose }: ChallengeModalProps)
               ) : (
               !gameId ? (
                 <form onSubmit={handleCreate} className="space-y-6">
-                  {!hasIdentity && (
-                    <>
-                      <div>
-                        <label className="text-xs font-bold text-white uppercase tracking-wider block mb-2">
-                          Your Name
-                        </label>
-                        <input 
-                          type="text" 
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          required 
-                          placeholder="Player 1" 
-                          className="input-premium font-bold" 
-                          maxLength={15}
-                        />
-                      </div>
+                  <div>
+                    <label className="text-xs font-bold text-white uppercase tracking-wider block mb-2">
+                      Your Name
+                    </label>
+                    <input 
+                      type="text" 
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required 
+                      placeholder="Player 1" 
+                      className="w-full bg-black/50 border border-white/10 p-4 rounded-xl text-white font-bold text-sm focus:outline-none focus:border-accent" 
+                      maxLength={15}
+                    />
+                  </div>
 
-                      <div>
-                        <label className="text-xs font-bold text-white uppercase tracking-wider block mb-2">
-                          Choose Your Side
-                        </label>
-                        <div className="grid grid-cols-2 gap-3">
-                          <button
-                            type="button"
-                            onClick={() => setSide("🍕")}
-                            className={`surface-interactive p-4 rounded-xl text-4xl flex items-center justify-center transition-all ${side === "🍕" ? "bg-accent/20 border-accent scale-105" : "grayscale"}`}
-                          >
-                            🍕
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setSide("🍗")}
-                            className={`surface-interactive p-4 rounded-xl text-4xl flex items-center justify-center transition-all ${side === "🍗" ? "bg-accent/20 border-accent scale-105" : "grayscale"}`}
-                          >
-                            🍗
-                          </button>
-                        </div>
-                      </div>
-                    </>
-                  )}
+                  <div>
+                    <label className="text-xs font-bold text-white uppercase tracking-wider block mb-2">
+                      Choose Your Side
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setSide("🍕")}
+                        className={`bg-[#111] p-4 rounded-xl text-4xl flex items-center justify-center transition-all ${side === "🍕" ? "bg-accent/20 border border-accent scale-105" : "border border-white/5 grayscale hover:grayscale-0"}`}
+                      >
+                        🍕
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSide("🍗")}
+                        className={`bg-[#111] p-4 rounded-xl text-4xl flex items-center justify-center transition-all ${side === "🍗" ? "bg-accent/20 border border-accent scale-105" : "border border-white/5 grayscale hover:grayscale-0"}`}
+                      >
+                        🍗
+                      </button>
+                    </div>
+                  </div>
 
                   <button 
                     type="submit" 
                     disabled={!name || !side}
                     className="bg-white text-black w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm hover:scale-[1.02] active:scale-[0.98] transition-transform disabled:opacity-50"
                   >
-                    {hasIdentity ? "Create Game" : "Set Name & Create"}
+                    Create Game
                   </button>
                 </form>
               ) : (

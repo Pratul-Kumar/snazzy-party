@@ -24,17 +24,13 @@ const ALL_ACHIEVEMENTS = [
 export default function IdCardModal({ isOpen, onClose }: IdCardModalProps) {
   const { 
     profile, hasIdentity, createIdentity, getHungryLevel, 
-    isOwner, setLevelOverride, isAnonymous, 
-    signUpWithEmail, logInWithEmail, logOut 
+    isOwner, setLevelOverride, isAnonymous 
   } = useUser();
   const [name, setName] = useState("");
   const [side, setSide] = useState<"🍕" | "🍗" | "">("");
   const cardRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
   
-  const [authTab, setAuthTab] = useState<"quick" | "signup" | "login">("quick");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   // Owner target ID logic
@@ -45,53 +41,17 @@ export default function IdCardModal({ isOpen, onClose }: IdCardModalProps) {
     e.preventDefault();
     setIsLoading(true);
     
-    if ((authTab === "quick" || authTab === "signup") && (!name.trim() || !side)) {
+    if (!name.trim() || !side) {
       toast.error("Enter name and side!");
       setIsLoading(false);
       return;
     }
 
-    if ((authTab === "signup" || authTab === "login") && (!email || !password)) {
-      toast.error("Enter email and password!");
-      setIsLoading(false);
-      return;
-    }
-
-    let processedEmail = email.trim().toLowerCase();
-    if (!processedEmail.includes("@")) {
-      processedEmail = `${processedEmail}@snazzybois.local`;
-    }
-
     try {
-      if (authTab === "quick") {
-        createIdentity(name.trim(), side as "🍕" | "🍗");
-        toast.success("Identity Created!");
-      } else if (authTab === "signup") {
-        await signUpWithEmail(processedEmail, password, name.trim(), side as "🍕" | "🍗");
-        toast.success("Account Created!");
-      } else if (authTab === "login") {
-        await logInWithEmail(processedEmail, password);
-        toast.success("Logged in!");
-      }
+      createIdentity(name.trim(), side as "🍕" | "🍗");
+      toast.success("Identity Created!");
     } catch (err: any) {
       toast.error(err.message || "Failed");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleLink = async () => {
-    const linkEmail = prompt("Enter your email address to save progress:");
-    if (!linkEmail) return;
-    const linkPass = prompt("Enter a secure password:");
-    if (!linkPass) return;
-
-    setIsLoading(true);
-    try {
-      await signUpWithEmail(linkEmail, linkPass, profile?.name || "Player", profile?.side || "🍕");
-      toast.success("Progress saved! You now have a permanent account.");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to link account");
     } finally {
       setIsLoading(false);
     }
@@ -215,103 +175,55 @@ export default function IdCardModal({ isOpen, onClose }: IdCardModalProps) {
 
           {!hasIdentity ? (
             <div className="surface p-8 sm:p-10 rounded-[32px]">
-              <div className="flex gap-2 mb-6">
-                <button type="button" onClick={() => setAuthTab("quick")} className={`flex-1 text-[10px] font-black uppercase tracking-widest py-2 rounded-xl transition-colors ${authTab === "quick" ? "bg-white text-black" : "bg-white/5 text-white/50 hover:bg-white/10"}`}>Quick</button>
-                <button type="button" onClick={() => setAuthTab("signup")} className={`flex-1 text-[10px] font-black uppercase tracking-widest py-2 rounded-xl transition-colors ${authTab === "signup" ? "bg-white text-black" : "bg-white/5 text-white/50 hover:bg-white/10"}`}>Sign Up</button>
-                <button type="button" onClick={() => setAuthTab("login")} className={`flex-1 text-[10px] font-black uppercase tracking-widest py-2 rounded-xl transition-colors ${authTab === "login" ? "bg-white text-black" : "bg-white/5 text-white/50 hover:bg-white/10"}`}>Log In</button>
-              </div>
-              
               <h2 className="text-xl sm:text-2xl font-black mb-2 text-white">
-                {authTab === "quick" ? "Enter the Arena 👀" : authTab === "signup" ? "Create Your Account 🚀" : "Welcome Back 🎮"}
+                Enter the Arena 👀
               </h2>
               <p className="text-muted text-xs sm:text-sm mb-6 leading-relaxed">
-                {authTab === "quick" ? "Play instantly. Progress saved on this device only." : authTab === "signup" ? "Save your XP, rank, and stats forever." : "Log in to reclaim your rank."}
+                Play instantly. Progress saved on this device.
               </p>
               
               <form onSubmit={handleSubmit} className="space-y-4">
-                {(authTab === "signup" || authTab === "login") && (
-                  <>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Email or Username..."
-                        className="w-full bg-black/50 border border-white/10 p-3 rounded-xl text-white placeholder:text-white/30 text-sm focus:outline-none"
-                      />
-                      {authTab === "signup" && (
-                        <p className="text-[9px] text-muted text-left mt-1 ml-1 tracking-wider uppercase">
-                          * Use email OR a custom username (e.g. RahulGamer#1)
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Password..."
-                        className="w-full bg-black/50 border border-white/10 p-3 rounded-xl text-white placeholder:text-white/30 text-sm focus:outline-none"
-                      />
-                      {authTab === "signup" && (
-                        <p className="text-[9px] text-muted text-left mt-1 ml-1 tracking-wider uppercase">
-                          * Use any random password (don't use your gmail password)
-                        </p>
-                      )}
-                    </div>
-                  </>
-                )}
-
-                {(authTab === "quick" || authTab === "signup") && (
-                  <>
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      maxLength={25}
-                      placeholder="Enter Snazzy Name..."
-                      className="w-full bg-black/50 border border-white/10 p-3 rounded-xl text-white placeholder:text-white/30 text-sm focus:outline-none"
-                    />
-                    {authTab === "signup" && (
-                      <p className="text-[10px] text-accent/80 font-bold text-center mt-2 tracking-widest uppercase">
-                        🔒 Your data is completely safe and not shared with anyone.
-                      </p>
-                    )}
-                    
-                    <div className="space-y-3 pt-2">
-                      <p className="text-xs font-bold uppercase tracking-widest text-muted text-center">Choose your side</p>
-                      <div className="grid grid-cols-2 gap-3">
-                        <button
-                          type="button"
-                          onClick={() => setSide("🍕")}
-                          className={`p-3 rounded-2xl border-2 flex flex-col items-center justify-center gap-1 transition-all ${
-                            side === "🍕" ? "border-accent bg-accent/20" : "border-white/10 hover:border-white/20"
-                          }`}
-                        >
-                          <span className="text-3xl">🍕</span>
-                          <span className="font-bold text-white tracking-widest text-[10px] uppercase">Pizza</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setSide("🍗")}
-                          className={`p-3 rounded-2xl border-2 flex flex-col items-center justify-center gap-1 transition-all ${
-                            side === "🍗" ? "border-gold bg-gold/20" : "border-white/10 hover:border-white/20"
-                          }`}
-                        >
-                          <span className="text-3xl">🍗</span>
-                          <span className="font-bold text-white tracking-widest text-[10px] uppercase">Biryani</span>
-                        </button>
-                      </div>
-                    </div>
-                  </>
-                )}
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  maxLength={25}
+                  placeholder="Enter Snazzy Name..."
+                  className="w-full bg-black/50 border border-white/10 p-3 rounded-xl text-white placeholder:text-white/30 text-sm focus:outline-none"
+                />
+                
+                <div className="space-y-3 pt-2">
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted text-center">Choose your side</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setSide("🍕")}
+                      className={`p-3 rounded-2xl border-2 flex flex-col items-center justify-center gap-1 transition-all ${
+                        side === "🍕" ? "border-accent bg-accent/20" : "border-white/10 hover:border-white/20"
+                      }`}
+                    >
+                      <span className="text-3xl">🍕</span>
+                      <span className="font-bold text-white tracking-widest text-[10px] uppercase">Pizza</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSide("🍗")}
+                      className={`p-3 rounded-2xl border-2 flex flex-col items-center justify-center gap-1 transition-all ${
+                        side === "🍗" ? "border-gold bg-gold/20" : "border-white/10 hover:border-white/20"
+                      }`}
+                    >
+                      <span className="text-3xl">🍗</span>
+                      <span className="font-bold text-white tracking-widest text-[10px] uppercase">Biryani</span>
+                    </button>
+                  </div>
+                </div>
 
                 <button
                   type="submit"
                   disabled={isLoading}
                   className="w-full bg-white text-black py-4 rounded-2xl font-black uppercase tracking-widest hover:scale-[1.02] transition-transform disabled:opacity-50 mt-4"
                 >
-                  {isLoading ? "PLEASE WAIT..." : authTab === "login" ? "LOG IN" : "CREATE MY ID"}
+                  {isLoading ? "PLEASE WAIT..." : "CREATE MY ID"}
                 </button>
               </form>
             </div>
@@ -454,30 +366,6 @@ export default function IdCardModal({ isOpen, onClose }: IdCardModalProps) {
                   <Share2 size={16} />
                   Share ID
                 </button>
-              </div>
-
-              {/* Account Controls */}
-              <div className="mt-3">
-                {!isOwner && isAnonymous ? (
-                  <button
-                    onClick={handleLink}
-                    disabled={isLoading}
-                    className="w-full bg-accent/10 text-accent border border-accent/20 py-3 rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-accent/20 transition-colors disabled:opacity-50"
-                  >
-                    {isLoading ? "Saving..." : "Save Progress (Link Email)"}
-                  </button>
-                ) : (
-                  <button
-                    onClick={async () => {
-                      await logOut();
-                      onClose();
-                      toast.success("Logged out successfully");
-                    }}
-                    className="w-full bg-white/5 text-muted border border-white/10 py-3 rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-white/10 transition-colors"
-                  >
-                    Log Out
-                  </button>
-                )}
               </div>
               
               {/* Owner Controls */}
