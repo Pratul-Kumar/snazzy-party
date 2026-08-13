@@ -20,10 +20,10 @@ export default function LiveSubscriberCount({
     if (isLoading) {
       return (
         <div className={`flex flex-col ${className}`}>
-          <span className="font-gamer-mono text-[6px] md:text-[7px] tracking-[0.2em] text-[var(--muted)] mt-0.5">
+          <span className="font-gamer-mono text-[8px] md:text-[9px] tracking-[0.2em] text-[var(--muted)] mt-0.5">
             SUBSCRIBERS
           </span>
-          <span className="font-gamer-heading text-sm md:text-base tracking-wider text-[var(--muted)] leading-none mt-1">
+          <span className="font-gamer-heading text-base md:text-lg tracking-wider text-[var(--muted)] leading-none mt-1">
             LOADING...
           </span>
         </div>
@@ -33,13 +33,13 @@ export default function LiveSubscriberCount({
     if (isError) {
       return (
         <div className={`flex flex-col ${className}`}>
-          <span className="font-gamer-mono text-[6px] md:text-[7px] tracking-[0.2em] text-[var(--muted)] mt-0.5">
+          <span className="font-gamer-mono text-[8px] md:text-[9px] tracking-[0.2em] text-[var(--muted)] mt-0.5">
             SUBSCRIBERS
           </span>
-          <span className="font-gamer-heading text-sm md:text-base tracking-wider text-[var(--text)] leading-none mt-1">
+          <span className="font-gamer-heading text-base md:text-lg tracking-wider text-[var(--text)] leading-none mt-1">
             --
           </span>
-          <span className="font-gamer-mono text-[6px] md:text-[7px] tracking-[0.15em] text-red-500 mt-0.5">
+          <span className="font-gamer-mono text-[8px] md:text-[9px] tracking-[0.15em] text-red-500 mt-0.5">
             DATA UNAVAILABLE
           </span>
         </div>
@@ -54,27 +54,27 @@ export default function LiveSubscriberCount({
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}
-            className="font-gamer-heading text-sm md:text-base tracking-wider text-[var(--text)] leading-none"
+            className="font-gamer-heading text-base md:text-lg tracking-wider text-[var(--text)] leading-none mt-1"
           >
             {displayCount}
           </motion.span>
         </AnimatePresence>
-        <span className="font-gamer-mono text-[6px] md:text-[7px] tracking-[0.2em] text-[var(--muted)] mt-0.5">
+        <span className="font-gamer-mono text-[8px] md:text-[9px] tracking-[0.2em] text-[var(--muted)] mt-0.5">
           SUBSCRIBERS
         </span>
-        <div className="flex items-center gap-2 mt-0.5">
+        <div className="flex items-center gap-2 mt-1">
           {!is100K ? (
-            <span className="font-gamer-mono text-[6px] md:text-[7px] tracking-[0.15em] text-[var(--accent)]">
+            <span className="font-gamer-mono text-[8px] md:text-[9px] tracking-[0.15em] text-[var(--accent)]">
               {toGo}
             </span>
           ) : (
-            <span className="font-gamer-mono text-[6px] md:text-[7px] tracking-[0.15em] text-[var(--accent-secondary)]">
+            <span className="font-gamer-mono text-[8px] md:text-[9px] tracking-[0.15em] text-[var(--accent-secondary)]">
               🏆 100K ACHIEVED
             </span>
           )}
-          <div className="flex items-center gap-1">
-            <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-            <span className="font-gamer-mono text-[6px] md:text-[7px] tracking-[0.15em] text-red-500">
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+            <span className="font-gamer-mono text-[8px] md:text-[9px] tracking-[0.15em] text-red-500">
               LIVE
             </span>
           </div>
