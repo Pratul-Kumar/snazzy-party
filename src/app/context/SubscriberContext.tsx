@@ -53,10 +53,11 @@ export function SubscriberProvider({ children }: { children: ReactNode }) {
         setIs100K(data.is100K || false);
         setIsError(false);
       } else {
-        // API returned an error structure or a non-200 status
+        console.error("[YouTube Fetch Error] API returned invalid response:", { status: res.status, data });
         setIsError(true);
       }
-    } catch {
+    } catch (err) {
+      console.error("[YouTube Fetch Error] Network or parse failure:", err);
       setIsError(true);
     } finally {
       setIsLoading(false);
