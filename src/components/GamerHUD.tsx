@@ -9,7 +9,7 @@ interface GamerHUDProps {
 }
 
 export default function GamerHUD({ playerName = "VISITOR", onOpenMenu }: GamerHUDProps) {
-  const { celebration, hasSeen, replay } = useCelebration();
+  const { celebration, hasSeen, replay, setTestMode } = useCelebration();
   return (
     <div className="fixed inset-0 z-40 pointer-events-none p-4 md:p-6 no-select">
       
@@ -56,19 +56,17 @@ export default function GamerHUD({ playerName = "VISITOR", onOpenMenu }: GamerHU
           </span>
         </div>
         
-        {celebration?.enabled && hasSeen && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={replay}
-            className="mt-4 pointer-events-auto flex items-center gap-2 bg-[var(--accent)]/10 hover:bg-[var(--accent)]/20 border border-[var(--accent)]/30 text-[var(--accent)] px-3 py-1.5 rounded-lg transition-colors"
-          >
-            <span className="text-sm">🏆</span>
-            <span className="font-gamer-mono text-[8px] tracking-[0.2em] font-bold">100K</span>
-          </motion.button>
-        )}
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setTestMode(true)}
+          className="mt-4 pointer-events-auto flex items-center gap-2 bg-[var(--accent)]/10 hover:bg-[var(--accent)]/20 border border-[var(--accent)]/30 text-[var(--accent)] px-3 py-1.5 rounded-lg transition-colors"
+        >
+          <span className="text-sm">🏆</span>
+          <span className="font-gamer-mono text-[8px] tracking-[0.2em] font-bold">100K</span>
+        </motion.button>
       </div>
 
       {/* ═══ BOTTOM LEFT — Mission Status ═══ */}
