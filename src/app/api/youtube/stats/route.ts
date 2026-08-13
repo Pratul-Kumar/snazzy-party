@@ -52,7 +52,12 @@ export async function GET() {
 
   try {
     const res = await fetch(
-      `${YOUTUBE_API_URL}/channels?part=statistics&forHandle=@SnazzyZone&key=${apiKey}`
+      `${YOUTUBE_API_URL}/channels?part=statistics&forHandle=@SnazzyZone&key=${apiKey}`,
+      {
+        headers: {
+          Referer: "https://snazzyparty.vercel.app/"
+        }
+      }
     );
 
     if (!res.ok) {
