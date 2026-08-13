@@ -198,7 +198,7 @@ export default function CelebrationModal() {
                   initial={{ scale: 0, rotate: -10 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ type: "spring", bounce: 0.6, duration: 1 }}
-                  className="font-gamer-heading text-8xl md:text-9xl text-[var(--accent)] tracking-tighter drop-shadow-[0_0_40px_rgba(216,178,76,0.4)]"
+                  className="font-gamer-heading text-7xl sm:text-8xl md:text-9xl text-[var(--accent)] tracking-tighter drop-shadow-[0_0_40px_rgba(216,178,76,0.4)]"
                   style={{ textShadow: "0 0 40px rgba(216, 178, 76, 0.4)" }}
                 >
                   100K
@@ -212,7 +212,7 @@ export default function CelebrationModal() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.5 }}
-                  className="mt-2 font-gamer-mono text-sm md:text-base tracking-[0.5em] text-white"
+                  className="mt-2 font-gamer-mono text-xs sm:text-sm md:text-base tracking-[0.5em] text-white"
                 >
                   SNAZZYZONE
                 </motion.div>
@@ -225,7 +225,7 @@ export default function CelebrationModal() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.8 }}
-                  className="mt-6 font-gamer-heading text-3xl md:text-4xl tracking-widest text-white"
+                  className="mt-4 sm:mt-6 font-gamer-heading text-2xl sm:text-3xl md:text-4xl tracking-widest text-white"
                 >
                   100,000 SUBSCRIBERS
                 </motion.div>
