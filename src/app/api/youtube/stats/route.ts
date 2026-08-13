@@ -1,18 +1,15 @@
 import { NextResponse } from "next/server";
 
-const CHANNEL_ID = "UCxxxxxxxxxxxxxxxxxxxxxxxx"; // Will be resolved on first call
 const YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3";
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-// In-memory cache for serverless (survives within same instance)
 let cachedData: {
-  subscriberCount: number;
+  success: boolean;
+  subscriberCount: number | null;
   displayCount: string;
-  channelTitle: string;
   is100K: boolean;
   fetchedAt: number;
 } | null = null;
-
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 function formatCount(count: number): string {
   if (count >= 1_000_000) {
@@ -21,7 +18,6 @@ function formatCount(count: number): string {
   }
   if (count >= 1_000) {
     const k = count / 1_000;
-    // YouTube rounds to 3 significant figures, so show 1 decimal for < 100K
     if (k >= 100) return `${Math.round(k)}K`;
     if (k % 1 === 0) return `${k}K`;
     return `${k.toFixed(1)}K`;
@@ -29,76 +25,20 @@ function formatCount(count: number): string {
   return count.toString();
 }
 
-async function resolveChannelId(apiKey: string): Promise<string | null> {
-  try {
-    const res = await fetch(
-      `${YOUTUBE_API_URL}/channels?part=id&forHandle=SnazzyZone&key=${apiKey}`
-    );
-    if (!res.ok) return null;
-    const data = await res.json();
-    if (data.items && data.items.length > 0) {
-      return data.items[0].id;
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-async function fetchSubscriberCount(apiKey: string, channelId: string) {
-  const res = await fetch(
-    `${YOUTUBE_API_URL}/channels?part=statistics,snippet&id=${channelId}&key=${apiKey}`
-  );
-
-  if (!res.ok) {
-    throw new Error(`YouTube API returned ${res.status}`);
-  }
-
-  const data = await res.json();
-
-  if (!data.items || data.items.length === 0) {
-    throw new Error("Channel not found");
-  }
-
-  const channel = data.items[0];
-  const subscriberCount = parseInt(channel.statistics.subscriberCount, 10);
-  const channelTitle = channel.snippet?.title || "SnazzyZone";
-
-  return {
-    subscriberCount,
-    displayCount: formatCount(subscriberCount),
-    channelTitle,
-    is100K: subscriberCount >= 100_000,
-    fetchedAt: Date.now(),
-  };
-}
-
-// Store the resolved channel ID
-let resolvedChannelId: string | null = null;
-
 export async function GET() {
   const apiKey = process.env.YOUTUBE_API_KEY;
 
   if (!apiKey) {
-    // No API key configured — return fallback
     return NextResponse.json(
       {
-        subscriberCount: null,
-        displayCount: "-- --",
-        channelTitle: "SnazzyZone",
-        is100K: false,
-        error: "API key not configured",
+        success: false,
+        error: "YOUTUBE_API_KEY is missing",
       },
-      {
-        status: 200,
-        headers: {
-          "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
-        },
-      }
+      { status: 500 }
     );
   }
 
-  // Check in-memory cache
+  // Check cache
   if (cachedData && Date.now() - cachedData.fetchedAt < CACHE_DURATION) {
     return NextResponse.json(cachedData, {
       headers: {
@@ -109,54 +49,85 @@ export async function GET() {
   }
 
   try {
-    // Resolve channel ID if needed
-    if (!resolvedChannelId) {
-      resolvedChannelId = await resolveChannelId(apiKey);
-      if (!resolvedChannelId) {
-        throw new Error("Could not resolve channel ID for @SnazzyZone");
-      }
+    const res = await fetch(
+      `${YOUTUBE_API_URL}/channels?part=statistics&forHandle=@SnazzyZone&key=${apiKey}`
+    );
+
+    if (!res.ok) {
+      const errorData = await res.text();
+      let details = "Unknown error";
+      try {
+        const parsed = JSON.parse(errorData);
+        if (parsed.error && parsed.error.message) {
+          details = parsed.error.message;
+        }
+      } catch (e) {}
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: "YouTube API request failed",
+          status: res.status,
+          details,
+        },
+        { status: res.status }
+      );
     }
 
-    const data = await fetchSubscriberCount(apiKey, resolvedChannelId);
-    cachedData = data;
+    const data = await res.json();
 
-    return NextResponse.json(data, {
+    if (!data.items || data.items.length === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "SnazzyZone channel was not found",
+        },
+        { status: 404 }
+      );
+    }
+
+    const channel = data.items[0];
+    
+    if (channel.statistics.hiddenSubscriberCount) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Subscriber count is hidden",
+        },
+        { status: 403 }
+      );
+    }
+
+    const subscriberCount = parseInt(channel.statistics.subscriberCount, 10);
+    
+    if (process.env.NODE_ENV === "development") {
+      const sanitizedResponse = { ...data };
+      console.log("[YouTube] API response:", JSON.stringify(sanitizedResponse, null, 2));
+      console.log("[YouTube] Subscriber count:", subscriberCount);
+    }
+
+    cachedData = {
+      success: true,
+      subscriberCount,
+      displayCount: formatCount(subscriberCount),
+      is100K: subscriberCount >= 100_000,
+      fetchedAt: Date.now(),
+    };
+
+    return NextResponse.json(cachedData, {
       headers: {
         "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
         "X-Cache": "MISS",
       },
     });
   } catch (error: any) {
-    console.error("[YouTube API Error]", error.message);
-
-    // Return cached data if available (stale but better than nothing)
-    if (cachedData) {
-      return NextResponse.json(
-        { ...cachedData, stale: true },
-        {
-          headers: {
-            "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
-            "X-Cache": "STALE",
-          },
-        }
-      );
-    }
-
-    // No cache, no API — graceful fallback
     return NextResponse.json(
       {
-        subscriberCount: null,
-        displayCount: "-- --",
-        channelTitle: "SnazzyZone",
-        is100K: false,
-        error: "Temporarily unavailable",
+        success: false,
+        error: "Internal server error during YouTube API call",
+        details: error.message,
       },
-      {
-        status: 200,
-        headers: {
-          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
-        },
-      }
+      { status: 500 }
     );
   }
 }

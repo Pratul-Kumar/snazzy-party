@@ -45,17 +45,15 @@ export function SubscriberProvider({ children }: { children: ReactNode }) {
   const fetchStats = useCallback(async () => {
     try {
       const res = await fetch("/api/youtube/stats");
-      if (!res.ok) throw new Error("API error");
       const data = await res.json();
 
-      if (data.subscriberCount !== null && data.subscriberCount !== undefined) {
+      if (res.ok && data.success && data.subscriberCount !== null && data.subscriberCount !== undefined) {
         setSubscriberCount(data.subscriberCount);
-        setDisplayCount(data.displayCount || "-- --");
-        setChannelTitle(data.channelTitle || "SnazzyZone");
+        setDisplayCount(data.displayCount);
         setIs100K(data.is100K || false);
         setIsError(false);
       } else {
-        // API returned but no valid data
+        // API returned an error structure or a non-200 status
         setIsError(true);
       }
     } catch {
