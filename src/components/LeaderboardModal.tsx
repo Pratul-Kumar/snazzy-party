@@ -56,14 +56,14 @@ export default function LeaderboardModal({ isOpen, onClose }: LeaderboardModalPr
           </button>
 
           <div className="text-center mb-6 relative z-10 shrink-0">
-            <div className="w-16 h-16 bg-accent/20 text-accent rounded-2xl flex items-center justify-center mx-auto mb-4 border border-accent/20">
+            <div className="w-16 h-16 bg-accent/10 text-accent rounded-2xl flex items-center justify-center mx-auto mb-4 border border-accent/20 shadow-[0_0_30px_rgba(255,90,0,0.1)]">
               <Trophy size={32} />
             </div>
             <h2 className="text-2xl font-black uppercase tracking-widest text-white mb-2">
-              Global XP Leaderboard
+              TOP PLAYERS
             </h2>
-            <p className="text-muted text-sm font-bold uppercase tracking-widest">
-              Top 20 Hungry Bois
+            <p className="text-muted text-[10px] font-bold uppercase tracking-[0.2em]">
+              SNAZZY ARENA RANKINGS
             </p>
           </div>
 
@@ -76,51 +76,44 @@ export default function LeaderboardModal({ isOpen, onClose }: LeaderboardModalPr
               players.map((player, index) => {
                 const isTop3 = index < 3;
                 return (
-                  <div 
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
                     key={index}
-                    className={`flex items-center gap-4 p-4 rounded-2xl border ${
-                      index === 0 ? 'bg-gold/10 border-gold/30' : 
+                    className={`flex items-center gap-4 p-4 rounded-xl border transition-all ${
+                      index === 0 ? 'bg-gold/10 border-gold/30 shadow-[0_0_20px_rgba(255,204,0,0.1)]' : 
                       index === 1 ? 'bg-slate-300/10 border-slate-300/30' : 
                       index === 2 ? 'bg-amber-700/10 border-amber-700/30' : 
-                      'bg-black/40 border-white/5'
+                      'bg-white/5 border-white/5 hover:bg-white/10'
                     }`}
                   >
-                    <div className={`text-xl font-black w-6 text-center ${
+                    <div className={`text-2xl w-8 text-center drop-shadow-md ${
                       index === 0 ? 'text-gold' : 
                       index === 1 ? 'text-slate-300' : 
                       index === 2 ? 'text-amber-700' : 
-                      'text-white/30'
+                      'text-white/20'
                     }`}>
-                      #{index + 1}
+                      {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-black text-white uppercase tracking-wider truncate max-w-[150px]">
+                        <span className="font-black text-white uppercase tracking-wider truncate max-w-[150px] text-sm">
                           {player.name}
                         </span>
-                        {player.role === "OWNER" && (
-                          <span className="text-[9px] bg-gold text-black px-1.5 py-0.5 rounded font-black uppercase tracking-widest">
-                            OWNER
-                          </span>
-                        )}
+                        <span className="text-lg opacity-80">{player.side}</span>
                       </div>
-                      <div className="text-xs font-bold text-muted uppercase tracking-widest flex items-center gap-2 mt-1">
-                        <span>{player.side}</span>
-                        <span>•</span>
-                        <span className="text-accent">Level {player.level}</span>
+                      <div className="text-[10px] text-muted font-bold uppercase tracking-widest mt-1">
+                        LEVEL {player.level || 1} • {player.xp?.toLocaleString() || 0} XP
                       </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-black text-white">{player.xp}</div>
-                      <div className="text-[10px] text-muted uppercase tracking-widest">XP</div>
                     </div>
                     <button 
                       onClick={() => setSelectedPlayer(player)}
-                      className="p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-colors text-[10px] font-bold uppercase tracking-widest text-muted hover:text-white"
+                      className="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] text-white transition-colors"
                     >
-                      View
+                      VIEW
                     </button>
-                  </div>
+                  </motion.div>
                 );
               })
             )}

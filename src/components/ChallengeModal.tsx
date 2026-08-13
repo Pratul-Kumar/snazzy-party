@@ -78,7 +78,7 @@ export default function ChallengeModal({ isOpen, onClose }: ChallengeModalProps)
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const gameUrl = mounted && typeof window !== "undefined" ? `${window.location.origin}/play/${gameId}` : "";
-  const inviteMessage = `Bro 😂\n\nStop scrolling.\nCome beat me at Tic-Tac-Toe.\nLoser gets reminded about Snazzy's missing party.\n\nGame Code: ${gameId}\nJoin here 👇\n${gameUrl}`;
+  const inviteMessage = `Come beat me at Tic-Tac-Toe.\n\nGame Code: ${gameId}\nJoin here 👇\n${gameUrl}`;
 
   const copyLink = () => {
     navigator.clipboard.writeText(inviteMessage); // Use full invite message instead of just link
@@ -89,7 +89,7 @@ export default function ChallengeModal({ isOpen, onClose }: ChallengeModalProps)
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Snazzy Party Arena",
+          title: "SnazzyZone Arena",
           text: inviteMessage,
           // NO url field — WhatsApp & other apps append it to text causing duplicate
         });
@@ -126,10 +126,10 @@ export default function ChallengeModal({ isOpen, onClose }: ChallengeModalProps)
             <div className="p-6 text-center border-b border-white/5 relative overflow-hidden">
               <div className="absolute inset-0 bg-accent/10 blur-[50px] rounded-t-full" />
               <h2 className="text-2xl font-black uppercase tracking-tight text-white relative z-10">
-                🎮 Party Arena
+                🎮 Snazzy Arena
               </h2>
               <p className="text-[10px] font-bold text-muted uppercase tracking-widest mt-2 relative z-10">
-                Winner gets bragging rights.<br/>Loser still owes the party.
+                Winner takes it all.
               </p>
             </div>
 

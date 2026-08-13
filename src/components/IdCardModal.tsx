@@ -16,11 +16,9 @@ interface IdCardModalProps {
 
 const ALL_ACHIEVEMENTS = [
   { id: "🍕 FIRST BITE", desc: "Created your profile." },
-  { id: "✍️ SIGNED", desc: "Created your first petition." },
-  { id: "🍗 FOOD WARRIOR", desc: "Voted in the food poll." },
   { id: "🎮 FIRST BLOOD", desc: "Won your first game." },
   { id: "🔥 ON FIRE", desc: "Won 5 games in a row." },
-  { id: "👑 PARTY LEGEND", desc: "Reached Level 20." }
+  { id: "👑 ARENA LEGEND", desc: "Reached Level 20." }
 ];
 
 export default function IdCardModal({ isOpen, onClose }: IdCardModalProps) {
@@ -126,7 +124,7 @@ export default function IdCardModal({ isOpen, onClose }: IdCardModalProps) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `snazzy_bois_${profile?.name.toLowerCase()}.png`;
+    a.download = `snazzy_zone_${profile?.name.toLowerCase()}.png`;
     a.click();
     URL.revokeObjectURL(url);
     toast.success("Downloaded!");
@@ -224,7 +222,7 @@ export default function IdCardModal({ isOpen, onClose }: IdCardModalProps) {
               </div>
               
               <h2 className="text-xl sm:text-2xl font-black mb-2 text-white">
-                {authTab === "quick" ? "What's your name, Hungry Bois? 👀" : authTab === "signup" ? "Create Your Account 🚀" : "Welcome Back 🍕"}
+                {authTab === "quick" ? "Enter the Arena 👀" : authTab === "signup" ? "Create Your Account 🚀" : "Welcome Back 🎮"}
               </h2>
               <p className="text-muted text-xs sm:text-sm mb-6 leading-relaxed">
                 {authTab === "quick" ? "Play instantly. Progress saved on this device only." : authTab === "signup" ? "Save your XP, rank, and stats forever." : "Log in to reclaim your rank."}
@@ -324,11 +322,12 @@ export default function IdCardModal({ isOpen, onClose }: IdCardModalProps) {
                 className="bg-[#111] border border-white/10 p-6 sm:p-8 rounded-[32px] relative overflow-hidden"
               >
                 {/* ID Header */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-accent/20 blur-[60px] rounded-full pointer-events-none" />
+                <p className="text-[9px] uppercase tracking-widest text-muted font-bold mb-6">
+                  SNAZZYZONE ID
+                </p>
                 <div className="flex justify-between items-start mb-8">
                   <div>
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted mb-1">
-                      🪪 SNAZZY BOIS ID
-                    </h3>
                     <div className="text-[10px] font-mono text-white/30 uppercase tracking-widest mb-4">
                       {profile?.odId}
                     </div>

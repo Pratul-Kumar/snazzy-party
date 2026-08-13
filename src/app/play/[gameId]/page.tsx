@@ -342,7 +342,7 @@ export default function GameRoom() {
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col items-center p-4 font-sans noise overflow-hidden relative">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-accent/5 rounded-full blur-[100px] pointer-events-none" />
       
-      <div className="w-full max-w-[400px] relative z-10 flex flex-col min-h-[90dvh]">
+      <div className="w-full max-w-[400px] lg:max-w-[800px] relative z-10 flex flex-col min-h-[90dvh]">
         {/* Header */}
         <div className="flex justify-between items-center mb-8 pt-4">
           <button onClick={() => router.push('/')} className="text-xs font-bold uppercase tracking-widest text-muted hover:text-white">
@@ -382,59 +382,66 @@ export default function GameRoom() {
           )}
         </div>
 
-        {/* The Board */}
-        {gameState.status !== "waiting" || amIPlayer1 ? (
-          <div className="grid grid-cols-3 gap-3 mb-8 mx-auto w-full max-w-[320px]">
-            {gameState.board.map((cell, idx) => (
-              <motion.button
-                key={idx}
-                whileTap={isMyTurn && !cell && gameState.status === "playing" ? { scale: 0.9 } : {}}
-                onClick={() => makeMove(idx)}
-                disabled={!isMyTurn || cell !== "" || gameState.status !== "playing"}
-                className={`aspect-square rounded-2xl flex items-center justify-center text-5xl bg-[#1a1a1a] border border-white/5 shadow-inner transition-colors
-                  ${!cell && isMyTurn && gameState.status === "playing" ? 'hover:bg-white/10 cursor-pointer' : 'cursor-default'}
-                  ${cell ? 'bg-white/5' : ''}
-                `}
-              >
-                <AnimatePresence>
-                  {cell && (
-                    <motion.span
-                      initial={{ scale: 0, opacity: 0, rotate: -45 }}
-                      animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                      className="drop-shadow-lg"
-                    >
-                      {cell}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </motion.button>
-            ))}
+        <div className="lg:grid lg:grid-cols-2 lg:gap-12 lg:items-start lg:mt-8 flex-1">
+          {/* LEFT COL: The Board & Game Forms */}
+          <div className="w-full flex-1 flex flex-col items-center justify-center min-h-[400px]">
+            {/* The Board */}
+            {gameState.status !== "waiting" || amIPlayer1 ? (
+              <div className="grid grid-cols-3 gap-3 md:gap-4 mb-8 mx-auto w-full max-w-[min(90vw,400px)]">
+                {gameState.board.map((cell, idx) => (
+                  <motion.button
+                    key={idx}
+                    whileTap={isMyTurn && !cell && gameState.status === "playing" ? { scale: 0.9 } : {}}
+                    onClick={() => makeMove(idx)}
+                    disabled={!isMyTurn || cell !== "" || gameState.status !== "playing"}
+                    className={`aspect-square min-h-[72px] md:min-h-[100px] rounded-2xl flex items-center justify-center text-5xl md:text-6xl bg-[#1a1a1a] border border-white/5 shadow-inner transition-colors
+                      ${!cell && isMyTurn && gameState.status === "playing" ? 'hover:bg-white/10 cursor-pointer' : 'cursor-default'}
+                      ${cell ? 'bg-white/5' : ''}
+                    `}
+                  >
+                    <AnimatePresence>
+                      {cell && (
+                        <motion.span
+                          initial={{ scale: 0, opacity: 0, rotate: -45 }}
+                          animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                          className="drop-shadow-lg pointer-events-none select-none"
+                        >
+                          {cell}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </motion.button>
+                ))}
+              </div>
+            ) : (
+              /* Join Game Form */
+              <div className="bg-[#111] p-6 rounded-3xl border border-white/10 mb-8 mx-auto w-full max-w-[320px]">
+                <h3 className="text-lg font-black uppercase mb-4 text-center">🎮 You&apos;ve been challenged</h3>
+                <p className="text-xs font-bold text-muted text-center mb-6">{gameState.player1.name} thinks they can beat you.</p>
+                
+                <form onSubmit={joinGame}>
+                  <input 
+                    type="text" 
+                    value={joinName}
+                    onChange={(e) => setJoinName(e.target.value)}
+                    placeholder="Your Name"
+                    required
+                    maxLength={15}
+                    className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 font-bold text-sm text-center focus:outline-none focus:border-accent mb-4"
+                  />
+                  <button 
+                    type="submit"
+                    className="w-full bg-accent text-white py-3 rounded-xl font-black uppercase tracking-widest text-xs hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                  >
+                    Accept Challenge
+                  </button>
+                </form>
+              </div>
+            )}
           </div>
-        ) : (
-          /* Join Game Form */
-          <div className="bg-[#111] p-6 rounded-3xl border border-white/10 mb-8 mx-auto w-full max-w-[320px]">
-            <h3 className="text-lg font-black uppercase mb-4 text-center">🎮 You&apos;ve been challenged</h3>
-            <p className="text-xs font-bold text-muted text-center mb-6">{gameState.player1.name} thinks they can beat you.</p>
-            
-            <form onSubmit={joinGame}>
-              <input 
-                type="text" 
-                value={joinName}
-                onChange={(e) => setJoinName(e.target.value)}
-                placeholder="Your Name"
-                required
-                maxLength={15}
-                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 font-bold text-sm text-center focus:outline-none focus:border-accent mb-4"
-              />
-              <button 
-                type="submit"
-                className="w-full bg-accent text-white py-3 rounded-xl font-black uppercase tracking-widest text-xs hover:scale-[1.02] active:scale-[0.98] transition-transform"
-              >
-                Accept Challenge
-              </button>
-            </form>
-          </div>
-        )}
+
+          {/* RIGHT COL: Overlays & Banter */}
+          <div className="flex flex-col gap-8 h-full">
 
         {/* End Game Overlay */}
         <AnimatePresence>
@@ -459,40 +466,40 @@ export default function GameRoom() {
               )}
 
               {gameState.rematchRequestedBy === myId ? (
-                <div className="bg-white/5 border border-white/10 py-4 rounded-xl mb-4">
-                  <p className="text-xs font-bold uppercase tracking-widest text-gold animate-pulse">Waiting for opponent to accept...</p>
+                <div className="bg-white/5 border border-white/10 py-4 rounded-xl mb-4 min-h-[56px] flex items-center justify-center">
+                  <p className="text-xs font-bold uppercase tracking-widest text-gold animate-pulse">Waiting for opponent...</p>
                 </div>
               ) : gameState.rematchRequestedBy && gameState.rematchRequestedBy !== myId ? (
                 <div className="mb-4">
                   <p className="text-xs font-black uppercase tracking-widest text-accent mb-3">🔥 Opponent wants a rematch! 🔥</p>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="flex flex-col gap-3">
                     <button 
                       onClick={acceptRematch}
-                      className="bg-accent text-white py-3 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-accent/90 transition-colors"
+                      className="w-full min-h-[56px] bg-accent text-white rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-accent/90 transition-colors"
                     >
-                      Accept
+                      Accept Rematch
                     </button>
                     <button 
                       onClick={declineRematch}
-                      className="bg-white/10 text-white py-3 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-white/20 transition-colors"
+                      className="w-full min-h-[56px] bg-white/10 text-white rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-white/20 transition-colors"
                     >
                       Decline
                     </button>
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-3">
                   <button 
                     onClick={requestRematch}
-                    className="bg-white/10 hover:bg-white/20 py-3 rounded-xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2"
+                    className="w-full min-h-[56px] bg-white/10 hover:bg-white/20 rounded-xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2"
                   >
-                    <RefreshCw size={14} /> Rematch
+                    <RefreshCw size={16} /> Request Rematch
                   </button>
                   <button 
                     onClick={shareResult}
-                    className="bg-white text-black py-3 rounded-xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2"
+                    className="w-full min-h-[56px] bg-white text-black rounded-xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2"
                   >
-                    <Share2 size={14} /> Share
+                    <Share2 size={16} /> Share Result
                   </button>
                 </div>
               )}
@@ -502,39 +509,41 @@ export default function GameRoom() {
 
         {/* Waiting invite actions */}
         {gameState.status === "waiting" && amIPlayer1 && (
-          <div className="mt-auto grid grid-cols-2 gap-3">
-            <button onClick={copyInvite} className="bg-white/10 text-white py-4 rounded-2xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 hover:bg-white/20">
-              <Copy size={14} /> Copy Link
+          <div className="mt-auto flex flex-col gap-3">
+            <button onClick={copyInvite} className="w-full min-h-[56px] bg-white/10 text-white rounded-2xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 hover:bg-white/20">
+              <Copy size={16} /> Copy Game Link
             </button>
-            <button onClick={shareResult} className="bg-accent text-white py-4 rounded-2xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 hover:bg-accent/90">
-              <Share2 size={14} /> Share Invite
+            <button onClick={shareResult} className="w-full min-h-[56px] bg-accent text-white rounded-2xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 hover:bg-accent/90">
+              <Share2 size={16} /> Share Invite
             </button>
           </div>
         )}
 
-        {/* Live Banter Menu (only when playing and a participant) */}
-        {gameState.status === "playing" && !isSpectator && (
-          <div className="mt-auto pt-8 flex flex-col gap-2">
-            <p className="text-[9px] font-black uppercase tracking-widest text-muted text-center mb-1">Live Banter</p>
-            <div className="flex gap-2 justify-center mb-2">
-              {['🤡', '💀', '🔥', '😡', '👀'].map(emoji => (
-                <button 
-                  key={emoji}
-                  onClick={() => sendAction("reaction", emoji)}
-                  className="bg-white/5 hover:bg-white/10 p-3 rounded-full text-xl transition-transform active:scale-90"
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <button onClick={() => sendAction("message", "Bro is taking hours to move 😂")} className="bg-white/5 hover:bg-white/10 p-2 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/70 truncate">Taking hours 😂</button>
-              <button onClick={() => sendAction("message", "Wallet Loading... 💳")} className="bg-white/5 hover:bg-white/10 p-2 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/70 truncate">Wallet Loading 💳</button>
-              <button onClick={() => sendAction("message", "You're getting cooked! 🍗")} className="bg-white/5 hover:bg-white/10 p-2 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/70 truncate">Getting cooked 🍗</button>
-              <button onClick={() => sendAction("message", "EZ WIN 😎")} className="bg-white/5 hover:bg-white/10 p-2 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/70 truncate">EZ WIN 😎</button>
-            </div>
+            {/* Live Banter Menu (only when playing and a participant) */}
+            {gameState.status === "playing" && !isSpectator && (
+              <div className="mt-auto pt-8 flex flex-col gap-3">
+                <p className="text-[9px] font-black uppercase tracking-widest text-muted text-center mb-1">Live Banter</p>
+                <div className="flex flex-wrap gap-2 justify-center mb-2">
+                  {['🤡', '💀', '🔥', '😡', '👀'].map(emoji => (
+                    <button 
+                      key={emoji}
+                      onClick={() => sendAction("reaction", emoji)}
+                      className="min-w-[56px] min-h-[56px] bg-white/5 hover:bg-white/10 rounded-xl text-2xl flex items-center justify-center transition-transform active:scale-90"
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <button onClick={() => sendAction("message", "Bro is taking hours to move 😂")} className="min-h-[56px] bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/70 px-2 flex items-center justify-center text-center">Taking hours 😂</button>
+                  <button onClick={() => sendAction("message", "Wallet Loading... 💳")} className="min-h-[56px] bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/70 px-2 flex items-center justify-center text-center">Wallet Loading 💳</button>
+                  <button onClick={() => sendAction("message", "You're getting cooked! 🍗")} className="min-h-[56px] bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/70 px-2 flex items-center justify-center text-center">Getting cooked 🍗</button>
+                  <button onClick={() => sendAction("message", "EZ WIN 😎")} className="min-h-[56px] bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/70 px-2 flex items-center justify-center text-center">EZ WIN 😎</button>
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
