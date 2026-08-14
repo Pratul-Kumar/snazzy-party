@@ -8,7 +8,6 @@ export default function CareerMode() {
   const { celebration } = useCelebration();
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const lineWidth = useTransform(scrollYProgress, [0.1, 0.6], ["0%", "100%"]);
 
   const levels = [
     { id: "01", title: "START", subtitle: "30 DEC 2021", desc: "Channel started.", status: "verified" as const },
@@ -49,7 +48,10 @@ export default function CareerMode() {
           <div className="relative h-[1px] bg-[var(--muted)]/10 w-full mb-4">
             <motion.div 
               className="absolute top-0 left-0 h-full bg-[var(--accent)]"
-              style={{ width: lineWidth }}
+              initial={{ width: "0%" }}
+              whileInView={{ width: "83.33%" }}
+              viewport={{ once: true }}
+              transition={{ duration: 2, ease: "easeOut" }}
             />
           </div>
 
