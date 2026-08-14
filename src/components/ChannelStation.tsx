@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const channels = [
@@ -39,6 +39,13 @@ const channels = [
 export default function ChannelStation() {
   const [activeIndex, setActiveIndex] = useState(0);
   const active = channels[activeIndex];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % channels.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
