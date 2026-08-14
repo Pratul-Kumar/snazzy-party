@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 
 const games = [
@@ -65,6 +65,13 @@ export default function GameLibraryV3() {
   const [activeIndex, setActiveIndex] = useState(0);
   const active = games[activeIndex];
   const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % games.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>

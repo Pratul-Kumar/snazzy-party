@@ -24,6 +24,13 @@ import ChallengeModal from "@/components/ChallengeModal";
 import IdCardModal from "@/components/IdCardModal";
 import LevelUpAnimation from "@/components/LevelUpAnimation";
 
+const SectionDivider = () => (
+  <div className="w-full flex justify-center items-center py-4 md:py-8 relative z-20 opacity-60">
+    <div className="h-[1px] w-[50%] max-w-md bg-gradient-to-r from-transparent via-[var(--muted)] to-transparent" />
+    <div className="absolute w-1.5 h-1.5 rotate-45 border border-[var(--muted)] bg-[var(--bg)]" />
+  </div>
+);
+
 export default function Home() {
   const { hasIdentity } = useUser();
   const [isChallengeOpen, setIsChallengeOpen] = useState(false);
@@ -98,22 +105,28 @@ export default function Home() {
             <CareerMode />
           </div>
 
+          <SectionDivider />
+
           {/* GAME LIBRARY — the games */}
           <div id="games">
             <GameLibraryV3 />
           </div>
+
+          <SectionDivider />
 
           {/* QUEST LOG — the missions */}
           <div id="questlog">
             <QuestLog />
           </div>
 
+          <SectionDivider />
+
           {/* CHANNEL HUB — the broadcast */}
           <div id="channels">
             <ChannelStation />
           </div>
 
-
+          <SectionDivider />
 
           {/* ARENA — multiplayer */}
           <div id="arena">
