@@ -6,7 +6,6 @@ import { useCelebration } from "@/app/context/CelebrationContext";
 
 export default function CareerMode() {
   const { celebration } = useCelebration();
-  const is100K = celebration?.enabled === true;
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const lineWidth = useTransform(scrollYProgress, [0.1, 0.6], ["0%", "100%"]);
@@ -17,8 +16,8 @@ export default function CareerMode() {
     { id: "03", title: "THE GAMES", subtitle: "LIBRARY", desc: "Farming Simulator • Cities: Skylines II • Manor Lords • Raft", status: "active" as const },
     { id: "04", title: "THE CHANNELS", subtitle: "NETWORK", desc: "Snazzy Zone • Snazzy Playz • Snazzy Flux", status: "active" as const },
     { id: "05", title: "2026 BUILD", subtitle: "MAIN QUEST", desc: "Current chapter.", status: "active" as const },
-    { id: "06", title: "100K", subtitle: "MILESTONE", desc: is100K ? "Achieved." : "The road to 100K.", status: is100K ? "verified" as const : "upcoming" as const },
-    { id: "07", title: "NEXT", subtitle: "?", desc: "The story continues.", status: "upcoming" as const },
+    { id: "06", title: "100K", subtitle: "MILESTONE", desc: "Achieved.", status: "verified" as const },
+    { id: "07", title: "200K", subtitle: "MILESTONE", desc: "The road to 200K.", status: "active" as const },
   ];
 
   return (

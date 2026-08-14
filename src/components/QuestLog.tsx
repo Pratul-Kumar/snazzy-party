@@ -6,7 +6,6 @@ import { useCelebration } from "@/app/context/CelebrationContext";
 
 export default function QuestLog() {
   const { celebration } = useCelebration();
-  const is100K = celebration?.enabled === true;
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const roadScale = useTransform(scrollYProgress, [0.2, 0.7], [0.95, 1.05]);
@@ -145,7 +144,8 @@ export default function QuestLog() {
               {[
                 { title: "KEEP CREATING", status: "ACTIVE" },
                 { title: "GROW THE CHANNELS", status: "ACTIVE" },
-                { title: "REACH 100K", status: is100K ? "ACHIEVED" : "ACTIVE" },
+                { title: "REACH 100K", status: "ACHIEVED" },
+                { title: "REACH 200K", status: "ACTIVE" },
               ].map((quest, i) => (
                 <div key={i}>
                   <div className="flex items-center gap-4 group">
